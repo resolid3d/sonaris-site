@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Sonaris — офлайн-плеєр аудіокниг для Android / an offline audiobook player for Android">
+<meta name="color-scheme" content="light dark">
+<title>Sonaris — Audiobooks</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap">
+<style>
+  :root {
+    --bg: #E9E3EE;
+    --surface: #FBF8FD;
+    --text: #1D1B20;
+    --muted: #49454F;
+    --line: #CEC6D6;
+    --accent: #6750A4;
+    --accent-soft: #EADDFF;
+    --on-accent-soft: #21005D;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #141218;
+      --surface: #1D1B20;
+      --text: #E6E0E9;
+      --muted: #CAC4D0;
+      --line: #3A3541;
+      --accent: #D0BCFF;
+      --accent-soft: #4F378B;
+      --on-accent-soft: #EADDFF;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #141218;
+    --surface: #1D1B20;
+    --text: #E6E0E9;
+    --muted: #CAC4D0;
+    --line: #3A3541;
+    --accent: #D0BCFF;
+    --accent-soft: #4F378B;
+    --on-accent-soft: #EADDFF;
+  }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Manrope", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    padding: 0 16px;
+  }
+  .page { max-width: 680px; margin: 0 auto; padding-block: 40px 64px; display: grid; gap: 32px; }
+  header { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .app { font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+  .lang { display: flex; gap: 8px; }
+  .lang button {
+    font: inherit; font-size: 14px; font-weight: 600; padding: 6px 14px; border-radius: 999px;
+    border: 1px solid var(--line); background: transparent; color: var(--text); cursor: pointer;
+  }
+  .lang button[aria-pressed="true"] { background: var(--accent-soft); color: var(--on-accent-soft); border-color: transparent; }
+  .lang button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  article { display: grid; gap: 32px; }
+  .intro { display: grid; gap: 12px; }
+  h1 { margin: 0; font-size: clamp(32px, 7vw, 46px); line-height: 1.1; font-weight: 800; text-wrap: balance; }
+  .lead { margin: 0; font-size: 18px; color: var(--muted); max-width: 34em; }
+  .status {
+    justify-self: start; font-size: 14px; font-weight: 600; padding: 6px 14px; border-radius: 999px;
+    background: var(--accent-soft); color: var(--on-accent-soft);
+  }
+  h2 { margin: 0; font-size: 21px; font-weight: 700; }
+  section { display: grid; gap: 12px; }
+  .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+  .feature { background: var(--surface); border-radius: 16px; padding: 16px 18px; display: grid; gap: 4px; }
+  .feature strong { font-weight: 700; }
+  .feature span { color: var(--muted); font-size: 15px; }
+  p { margin: 0; }
+  a { color: var(--accent); text-underline-offset: 3px; }
+  footer { color: var(--muted); font-size: 14px; border-top: 1px solid var(--line); padding-top: 18px; display: flex; gap: 16px; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <div class="app">Sonaris — Audiobooks</div>
+    <div class="lang" role="group" aria-label="Language / Мова">
+      <button type="button" id="btn-uk" data-lang="uk" aria-pressed="true">UA</button>
+      <button type="button" id="btn-en" data-lang="en" aria-pressed="false">EN</button>
+    </div>
+  </header>
+
+  <article lang="uk" id="uk">
+    <div class="intro">
+      <h1>Аудіокниги з вашого телефона — без акаунтів і реклами</h1>
+      <p class="lead">Sonaris грає аудіокниги, які вже лежать у вас на телефоні: MP3, M4A, M4B, Opus. Пам'ятає, де ви зупинились, і допомагає заснути під книгу, не втративши місця.</p>
+      <span class="status">Скоро в Google Play</span>
+    </div>
+
+    <section>
+      <h2>Що вміє</h2>
+      <div class="features">
+        <div class="feature"><strong>Бібліотека з папки</strong><span>Кожна підпапка — книга. Серії збираються самі, глави M4B — з файлу.</span></div>
+        <div class="feature"><strong>Таймер сну</strong><span>Плавно стишує звук, а вранці відмотує на місце, де ви заснули.</span></div>
+        <div class="feature"><strong>Швидкість і звук на книгу</strong><span>Своя швидкість, тональність і еквалайзер для кожної книги.</span></div>
+        <div class="feature"><strong>Відкат після паузи</strong><span>Що довша пауза, то далі назад — щоб не губити нитку.</span></div>
+        <div class="feature"><strong>Закладки й історія</strong><span>Закладки з нотатками, історія прослуховування й статистика.</span></div>
+        <div class="feature"><strong>Віджет і гарнітура</strong><span>Керування з головного екрана, сповіщення й кнопками навушників.</span></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Приватність</h2>
+      <p>Усе зберігається на телефоні. В інтернет застосунок звертається, лише коли ви самі шукаєте обкладинку чи опис. Докладно — у <a href="privacy/">політиці конфіденційності</a>.</p>
+    </section>
+  </article>
+
+  <article lang="en" id="en" hidden>
+    <div class="intro">
+      <h1>Audiobooks from your phone — no accounts, no ads</h1>
+      <p class="lead">Sonaris plays the audiobooks already on your phone: MP3, M4A, M4B, Opus. It remembers where you stopped and lets you fall asleep to a book without losing your place.</p>
+      <span class="status">Coming soon to Google Play</span>
+    </div>
+
+    <section>
+      <h2>What it does</h2>
+      <div class="features">
+        <div class="feature"><strong>Library from a folder</strong><span>Each subfolder is a book. Series group themselves; M4B chapters come from the file.</span></div>
+        <div class="feature"><strong>Sleep timer</strong><span>Fades the sound out, and in the morning rewinds to where you fell asleep.</span></div>
+        <div class="feature"><strong>Speed and sound per book</strong><span>Each book keeps its own speed, pitch and equalizer.</span></div>
+        <div class="feature"><strong>Rewind after pause</strong><span>The longer the pause, the further back — so you don’t lose the thread.</span></div>
+        <div class="feature"><strong>Bookmarks and history</strong><span>Bookmarks with notes, listening history and stats.</span></div>
+        <div class="feature"><strong>Widget and headset</strong><span>Control from the home screen, the notification and headphone buttons.</span></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Privacy</h2>
+      <p>Everything stays on your phone. The app goes online only when you search for a cover or description. Details are in the <a href="privacy/">privacy policy</a>.</p>
+    </section>
+  </article>
+
+  <footer>
+    <a href="privacy/" id="footer-privacy">Політика конфіденційності / Privacy policy</a>
+    <a href="mailto:resolid.3d@gmail.com">resolid.3d@gmail.com</a>
+  </footer>
+</div>
+<script>
+  (function () {
+    var buttons = document.querySelectorAll('.lang button');
+    function show(lang) {
+      ['uk', 'en'].forEach(function (l) { document.getElementById(l).hidden = l !== lang; });
+      buttons.forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.lang === lang)); });
+      document.documentElement.lang = lang;
+    }
+    var saved = null;
+    try { saved = localStorage.getItem('sonaris-privacy-lang'); } catch (e) {}
+    var guess = (navigator.language || '').toLowerCase().indexOf('uk') === 0 ? 'uk' : 'en';
+    show(saved === 'uk' || saved === 'en' ? saved : guess);
+    buttons.forEach(function (b) {
+      b.addEventListener('click', function () {
+        show(b.dataset.lang);
+        try { localStorage.setItem('sonaris-privacy-lang', b.dataset.lang); } catch (e) {}
+      });
+    });
+  })();
+</script>
+</body>
+</html>
