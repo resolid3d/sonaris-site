@@ -118,6 +118,8 @@
   td:first-child { font-weight: 600; white-space: nowrap; }
 
   footer { color: var(--muted); font-size: 14px; border-top: 1px solid var(--line); padding-top: 18px; }
+  /* Без цього display:grid на блоках мов перебиває атрибут hidden, і видно обидві мови. */
+  [hidden] { display: none !important; }
 </style>
 <style>body{margin:0}</style>
 </head>

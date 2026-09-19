@@ -78,6 +78,8 @@
   p { margin: 0; }
   a { color: var(--accent); text-underline-offset: 3px; }
   footer { color: var(--muted); font-size: 14px; border-top: 1px solid var(--line); padding-top: 18px; display: flex; gap: 16px; flex-wrap: wrap; }
+  /* Без цього display:grid на блоках мов перебиває атрибут hidden, і видно обидві мови. */
+  [hidden] { display: none !important; }
 </style>
 </head>
 <body>
