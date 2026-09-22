@@ -6,6 +6,8 @@
 <meta name="description" content="Sonaris — офлайн-плеєр аудіокниг для Android / an offline audiobook player for Android">
 <meta name="color-scheme" content="light dark">
 <title>Sonaris — Audiobooks</title>
+<link rel="icon" href="icon.png" sizes="192x192">
+<link rel="apple-touch-icon" href="icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap">
@@ -53,7 +55,10 @@
   }
   .page { max-width: 680px; margin: 0 auto; padding-block: 40px 64px; display: grid; gap: 32px; }
   header { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
-  .app { font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+  /* Іконка застосунку поруч із назвою: маленька, з тим самим радіусом,
+     що й на Android, щоб сайт і застосунок впізнавались як одне. */
+  .app { display: inline-flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+  .app img { width: 28px; height: 28px; border-radius: 7px; display: block; }
   .lang { display: flex; gap: 8px; }
   .lang button {
     font: inherit; font-size: 14px; font-weight: 600; padding: 6px 14px; border-radius: 999px;
@@ -85,7 +90,7 @@
 <body>
 <div class="page">
   <header>
-    <div class="app">Sonaris — Audiobooks</div>
+    <div class="app"><img src="icon.png" alt="" width="28" height="28">Sonaris — Audiobooks</div>
     <div class="lang" role="group" aria-label="Language / Мова">
       <button type="button" id="btn-uk" data-lang="uk" aria-pressed="true">UA</button>
       <button type="button" id="btn-en" data-lang="en" aria-pressed="false">EN</button>
