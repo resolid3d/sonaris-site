@@ -186,6 +186,37 @@
   .trailer-frame.sound .trailer-hint { opacity: 0; transform: translate(-50%, -8px); pointer-events: none; }
   .trailer-frame.playing .hint-idle, .trailer-frame:not(.playing) .hint-muted { display: none; }
 
+  /* ---------- Живі лічильники ----------
+     Бейдж сидить у рамці телефона й виступає за її край, як у відео.
+     У розмітці — кінцеве значення: без JavaScript чи з «менше руху» видно саме його. */
+  .badge {
+    position: absolute; z-index: 3; display: inline-flex; align-items: center; gap: 8px;
+    padding: 9px 16px 9px 12px; border-radius: 999px; white-space: nowrap;
+    background: var(--b-bg); color: var(--b-fg);
+    font-size: 22px; font-weight: 800; letter-spacing: -0.01em; font-variant-numeric: tabular-nums;
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45);
+  }
+  .badge svg { width: 22px; height: 22px; flex: none; }
+  .badge small { font-size: 13px; font-weight: 700; opacity: .85; }
+  .badge .needle { transform: rotate(60deg); transform-box: view-box; transform-origin: 12px 15px; transition: transform .35s cubic-bezier(.3,1.6,.5,1); }
+  .b-left { left: -14%; }
+  .b-right { right: -14%; }
+
+  /* Відкат після паузи: три смужки — програли, пауза, відмотали назад. */
+  .rewind {
+    display: grid; gap: 26px; width: min(440px, 100%); justify-self: center;
+    background: var(--surface); border-radius: 28px; padding: 30px 28px; box-shadow: var(--shadow);
+  }
+  .rw { display: grid; gap: 10px; --play: 72%; }
+  .rw-top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-weight: 600; color: var(--muted); }
+  .rw-top b { color: var(--text); font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .track { height: 8px; border-radius: 999px; background: var(--line); }
+  .fill { position: relative; height: 100%; border-radius: inherit; background: var(--accent); width: calc(var(--play) - var(--back)); }
+  .head {
+    position: absolute; right: -9px; top: 50%; width: 18px; height: 18px; margin-top: -9px;
+    border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px var(--surface);
+  }
+
   /* ---------- Анімації ----------
      Клас .anim ставить скрипт: без JavaScript усе просто видно, без руху.
      Поява — це animation з fill-mode backwards: вона діє лише до кінця анімації,
@@ -223,6 +254,17 @@
   .anim .features.in .feature:nth-child(2) { animation-delay: .08s; }
   .anim .features.in .feature:nth-child(3) { animation-delay: .16s; }
   .anim .features.in .feature:nth-child(4) { animation-delay: .24s; }
+
+  /* Бейджі вискакують, коли телефон уже приїхав, і далі ледь погойдуються. */
+  @keyframes pop { from { opacity: 0; scale: .5; } }
+  @keyframes bob { 0%, 100% { translate: 0 0; } 50% { translate: 0 -6px; } }
+  .anim .shots.in .badge { animation: pop .55s .75s cubic-bezier(.2,.9,.3,1.4) backwards, bob 4.5s 1.4s ease-in-out infinite; }
+  .anim .shots.in .phone + .phone .badge { animation-delay: .95s, 1.6s; }
+  /* Смужки: програвання до --play, пауза, відкат на --back (голівка на мить біліє). */
+  @keyframes rw-fill { 0% { width: 0; } 50%, 68% { width: var(--play); } 100% { width: calc(var(--play) - var(--back)); } }
+  @keyframes rw-head { 0%, 66% { background: var(--accent); scale: 1; } 72%, 94% { background: #fff; scale: 1.25; } 100% { background: var(--accent); scale: 1; } }
+  .anim .rewind.in .fill { animation: rw-fill 2.2s var(--delay) cubic-bezier(.4,0,.2,1) backwards; }
+  .anim .rewind.in .head { animation: rw-head 2.2s var(--delay) linear backwards; }
 
   /* Наведення: лише збільшення, без зсуву — зсунутий телефон тікав з-під курсора
      і смикався на краю. */
@@ -344,7 +386,9 @@
         <div class="shots glow" style="--tint:#7E57C2">
           <div class="phone"><img src="media/library-grid.webp" width="540" height="1101" loading="lazy"
                data-alt-uk="Бібліотека сіткою: Дракула, серії Барсум і Шерлок Голмс"
-               data-alt-en="Library grid: Dracula and the Barsoom and Sherlock Holmes series" alt=""></div>
+               data-alt-en="Library grid: Dracula and the Barsoom and Sherlock Holmes series" alt="">
+            <div class="badge b-left" style="--b-bg:#4F378B;--b-fg:#EADDFF;top:22%" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v14M9 19V8a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v11M15.5 6.5l3-.8a1 1 0 0 1 1.2.7l3 11.2M3 19h18"/></svg><span data-counter="int" data-to="13">13</span><small><span lang="uk">книг</span><span lang="en">books</span></small></div>
+          </div>
         </div>
       </section>
 
@@ -353,8 +397,8 @@
           <span class="eyebrow"><span lang="uk">Колір з обкладинки</span><span lang="en">Cover colours</span></span>
           <h2><span lang="uk">Плеєр вдягає кольори книги</span><span lang="en">The player wears the cover’s colours</span></h2>
           <p>
-            <span lang="uk">Фон, прогрес і рамка беруть колір з обкладинки, тож кожна книга виглядає по-своєму. Рамка навколо обкладинки — це прогрес усієї книги.</span>
-            <span lang="en">The background, progress bar and frame take their colour from the cover, so every book looks like itself. The frame around the cover is the progress of the whole book.</span>
+            <span lang="uk">Фон, прогрес і рамка беруть колір з обкладинки, тож кожна книга виглядає по-своєму. Рамка навколо обкладинки — це прогрес усієї книги. А швидкість кожна книга тримає свою.</span>
+            <span lang="en">The background, progress bar and frame take their colour from the cover, so every book looks like itself. The frame around the cover is the progress of the whole book. And each book keeps its own speed.</span>
           </p>
         </div>
         <div class="shots pair glow" style="--tint:#C62828">
@@ -363,7 +407,9 @@
                data-alt-en="Player in the red and gold of The Hound of the Baskervilles" alt=""></div>
           <div class="phone"><img src="media/player-dracula.webp" width="540" height="1101" loading="lazy"
                data-alt-uk="Плеєр «Дракули»: рамка прогресу заповнена наполовину, швидкість 1.4×"
-               data-alt-en="Dracula player: the progress frame half full, speed 1.4×" alt=""></div>
+               data-alt-en="Dracula player: the progress frame half full, speed 1.4×" alt="">
+            <div class="badge b-right" style="--b-bg:#D0BAFF;--b-fg:#21182F;bottom:18%" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4.5 18a9 9 0 1 1 15 0"/><path class="needle" d="M12 15V8"/></svg><span data-counter="steps" data-steps="1.0×|1.2×|1.4×">1.4×</span></div>
+          </div>
         </div>
       </section>
 
@@ -379,7 +425,9 @@
         <div class="shots glow" style="--tint:#1E88E5">
           <div class="phone"><img src="media/chapters.webp" width="540" height="1101" loading="lazy"
                data-alt-uk="Список глав «Принцеси Марса» на звороті обкладинки"
-               data-alt-en="Chapter list of A Princess of Mars on the back of the cover" alt=""></div>
+               data-alt-en="Chapter list of A Princess of Mars on the back of the cover" alt="">
+            <div class="badge b-left" style="--b-bg:#0D3A63;--b-fg:#D6E8FF;bottom:24%" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/></svg><span data-counter="int" data-to="29">29</span><small><span lang="uk">глав</span><span lang="en">chapters</span></small></div>
+          </div>
         </div>
       </section>
 
@@ -395,11 +443,37 @@
         <div class="shots glow" style="--tint:#8E24AA">
           <div class="phone"><img src="media/history.webp" width="540" height="1101" loading="lazy"
                data-alt-uk="Історія прослуховування «Дракули» по днях"
-               data-alt-en="Day-by-day listening history for Dracula" alt=""></div>
+               data-alt-en="Day-by-day listening history for Dracula" alt="">
+            <div class="badge b-right" style="--b-bg:#674FA5;--b-fg:#F3EDF9;top:26%" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg><span data-counter="clock" data-from="1789" data-dur="2200">00:00</span></div>
+          </div>
         </div>
       </section>
 
       <section class="row">
+        <div class="row-text">
+          <span class="eyebrow"><span lang="uk">Відкат після паузи</span><span lang="en">Rewind after pause</span></span>
+          <h2><span lang="uk">Що довша пауза — то далі назад</span><span lang="en">The longer the pause, the further back</span></h2>
+          <p>
+            <span lang="uk">Повернулись до книги — і кілька секунд прокручуються назад, щоб згадати, на чому зупинились. Після короткої паузи ледь-ледь, наступного дня — помітніше. Пороги й секунди налаштовуються.</span><span lang="en">Come back to a book and it steps back a few seconds so you can pick up the thread. Barely after a short pause, more the next day. Thresholds and seconds are adjustable.</span>
+          </p>
+        </div>
+        <div class="rewind glow" style="--tint:#4F378B" aria-hidden="true">
+          <div class="rw" style="--back:7%;--delay:0ms">
+            <div class="rw-top"><span><span lang="uk">Пауза кілька хвилин</span><span lang="en">A few minutes’ pause</span></span><b>−<span data-counter="int" data-to="5" data-delay="1500" data-dur="500">5</span><span lang="uk">&nbsp;с</span><span lang="en">&nbsp;s</span></b></div>
+            <div class="track"><div class="fill"><i class="head"></i></div></div>
+          </div>
+          <div class="rw" style="--back:18%;--delay:350ms">
+            <div class="rw-top"><span><span lang="uk">Пауза понад годину</span><span lang="en">Over an hour</span></span><b>−<span data-counter="int" data-to="15" data-delay="1850" data-dur="500">15</span><span lang="uk">&nbsp;с</span><span lang="en">&nbsp;s</span></b></div>
+            <div class="track"><div class="fill"><i class="head"></i></div></div>
+          </div>
+          <div class="rw" style="--back:34%;--delay:700ms">
+            <div class="rw-top"><span><span lang="uk">Наступного дня</span><span lang="en">The next day</span></span><b>−<span data-counter="int" data-to="30" data-delay="2200" data-dur="500">30</span><span lang="uk">&nbsp;с</span><span lang="en">&nbsp;s</span></b></div>
+            <div class="track"><div class="fill"><i class="head"></i></div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="row flip">
         <div class="row-text">
           <span class="eyebrow"><span lang="uk">Статистика</span><span lang="en">Statistics</span></span>
           <h2><span lang="uk">Скільки слухаєте — і за скільки дочитали</span><span lang="en">How much you listen — and how long each book took</span></h2>
@@ -411,10 +485,14 @@
         <div class="shots pair glow" style="--tint:#5E35B1">
           <div class="phone"><img src="media/stats.webp" width="540" height="1101" loading="lazy"
                data-alt-uk="Статистика: усього 41 год 34 хв, серія 15 днів, графік по днях"
-               data-alt-en="Statistics: 41 h 34 min total, a 15-day streak and a daily chart" alt=""></div>
+               data-alt-en="Statistics: 41 h 34 min total, a 15-day streak and a daily chart" alt="">
+            <div class="badge b-left" style="--b-bg:#D0BAFF;--b-fg:#21182F;top:14%" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="14" width="4.5" height="6" rx="1.5"/><rect x="16.5" y="14" width="4.5" height="6" rx="1.5"/></svg><span data-counter="duration" data-to="2494" data-dur="1600">41 h 34 min</span></div>
+          </div>
           <div class="phone"><img src="media/finished.webp" width="540" height="1101" loading="lazy"
                data-alt-uk="Прослухані книги з позначкою «Прослухано за 37 днів»"
-               data-alt-en="Finished books, each marked “Listened in N days”" alt=""></div>
+               data-alt-en="Finished books, each marked “Listened in N days”" alt="">
+            <div class="badge b-right" style="--b-bg:#4F378B;--b-fg:#EADDFF;bottom:16%" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17M9 15l2 2 4-4"/></svg><span data-counter="int" data-to="15" data-delay="1300">15</span><small><span lang="uk">днів поспіль</span><span lang="en">day streak</span></small></div>
+          </div>
         </div>
       </section>
     </div>
@@ -423,7 +501,6 @@
       <h2><span lang="uk">І ще</span><span lang="en">And also</span></h2>
       <div class="features">
         <div class="feature"><strong><span lang="uk">Швидкість і звук на книгу</span><span lang="en">Speed and sound per book</span></strong><span><span lang="uk">Своя швидкість, тональність і еквалайзер для кожної книги.</span><span lang="en">Each book keeps its own speed, pitch and equalizer.</span></span></div>
-        <div class="feature"><strong><span lang="uk">Відкат після паузи</span><span lang="en">Rewind after pause</span></strong><span><span lang="uk">Що довша пауза, то далі назад — щоб не губити нитку.</span><span lang="en">The longer the pause, the further back — so you don’t lose the thread.</span></span></div>
         <div class="feature"><strong><span lang="uk">Закладки</span><span lang="en">Bookmarks</span></strong><span><span lang="uk">Закладки з нотатками; довгий дотик — швидка закладка.</span><span lang="en">Bookmarks with notes; a long press adds one instantly.</span></span></div>
         <div class="feature"><strong><span lang="uk">Віджет і гарнітура</span><span lang="en">Widget and headset</span></strong><span><span lang="uk">Керування з головного екрана, сповіщення й кнопками навушників.</span><span lang="en">Control from the home screen, the notification and headphone buttons.</span></span></div>
       </div>
@@ -496,14 +573,89 @@
 
     var animated = document.documentElement.classList.contains('anim');
 
+    // Живі лічильники в бейджах. Значення в розмітці — кінцеве; анімація
+    // стартує від нуля, щойно секція заходить на екран, і скидається, коли вона пішла.
+    var easeOut = function (x) { return 1 - Math.pow(1 - x, 3); };
+    function fmt(el, v) {
+      var kind = el.getAttribute('data-counter');
+      if (kind === 'clock') {
+        var m = Math.floor(v / 60), sec = v % 60;
+        return (m < 10 ? '0' : '') + m + ':' + (sec < 10 ? '0' : '') + sec;
+      }
+      if (kind === 'duration') {
+        var uk = document.documentElement.lang === 'uk';
+        return Math.floor(v / 60) + (uk ? ' год ' : ' h ') + (v % 60) + (uk ? ' хв' : ' min');
+      }
+      return String(v);
+    }
+    function render(el, v) { el._v = v; el.textContent = fmt(el, v); }
+    function bump(el) {
+      var badge = el.closest('.badge, b') || el;
+      if (badge.animate) badge.animate([{ scale: 1 }, { scale: 1.14 }, { scale: 1 }], { duration: 320, easing: 'ease-out' });
+    }
+    function needle(el, i, n) {
+      var nd = el.parentNode.querySelector('.needle');
+      if (nd) nd.style.transform = 'rotate(' + (-60 + 120 * i / Math.max(1, n - 1)) + 'deg)';
+    }
+    function startCounter(el) {
+      stopCounter(el);
+      var kind = el.getAttribute('data-counter');
+      var delay = +(el.getAttribute('data-delay') || 1100);
+      var dur = +(el.getAttribute('data-dur') || 1300);
+      if (kind === 'steps') {
+        var steps = el.getAttribute('data-steps').split('|'), i = 0;
+        el.textContent = steps[0]; needle(el, 0, steps.length);
+        el._timers = [];
+        steps.slice(1).forEach(function (st, j) {
+          el._timers.push(setTimeout(function () {
+            el.textContent = st; needle(el, j + 1, steps.length); bump(el);
+          }, delay + 650 * (j + 1)));
+        });
+        return;
+      }
+      var from = kind === 'clock' ? +el.getAttribute('data-from') : 0;
+      var to = kind === 'clock' ? 0 : +el.getAttribute('data-to');
+      render(el, from);
+      var t0 = null;
+      el._timers = [setTimeout(function () {
+        function frame(now) {
+          if (t0 === null) t0 = now;
+          var p = Math.min(1, (now - t0) / dur);
+          render(el, Math.round(from + (to - from) * easeOut(p)));
+          if (p < 1) el._raf = requestAnimationFrame(frame);
+          else bump(el);
+        }
+        el._raf = requestAnimationFrame(frame);
+      }, delay)];
+    }
+    function stopCounter(el) {
+      (el._timers || []).forEach(clearTimeout);
+      if (el._raf) cancelAnimationFrame(el._raf);
+      el._timers = []; el._raf = 0;
+    }
+    function counters(root, on) {
+      root.querySelectorAll('[data-counter]').forEach(function (el) { if (on) startCounter(el); else stopCounter(el); });
+    }
+    // Одиниці «год/хв» залежать від мови — перемальовуємо при перемиканні.
+    buttons.forEach(function (b) {
+      b.addEventListener('click', function () {
+        document.querySelectorAll('[data-counter="duration"]').forEach(function (el) {
+          render(el, el._v != null ? el._v : +el.getAttribute('data-to'));
+        });
+      });
+    });
+    document.querySelectorAll('[data-counter="duration"]').forEach(function (el) { render(el, +el.getAttribute('data-to')); });
+
+
     // Поява розділів: щоразу, як елемент заходить на екран, і скидається,
     // коли він повністю пішов — тож перехід між секціями грає в обидва боки.
     if (animated) {
-      var targets = document.querySelectorAll('.row-text, .shots, .more > h2, .features, .trailer .row-text, .trailer-frame, .privacy');
+      var targets = document.querySelectorAll('.row-text, .shots, .rewind, .more > h2, .features, .trailer .row-text, .trailer-frame, .privacy');
       var seen = new IntersectionObserver(function (entries) {
         entries.forEach(function (e) {
-          if (e.intersectionRatio >= 0.2) e.target.classList.add('in');
-          else if (!e.isIntersecting) e.target.classList.remove('in');
+          var el = e.target, isIn = el.classList.contains('in');
+          if (e.intersectionRatio >= 0.2 && !isIn) { el.classList.add('in'); counters(el, true); }
+          else if (!e.isIntersecting && isIn) { el.classList.remove('in'); counters(el, false); }
         });
       }, { threshold: [0, 0.2] });
       targets.forEach(function (el) { el.classList.add('reveal'); seen.observe(el); });
