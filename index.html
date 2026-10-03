@@ -22,6 +22,9 @@
     try { saved = localStorage.getItem('sonaris-privacy-lang'); } catch (e) {}
     var guess = (navigator.language || '').toLowerCase().indexOf('uk') === 0 ? 'uk' : 'en';
     document.documentElement.lang = saved === 'uk' || saved === 'en' ? saved : guess;
+    // Анімації вмикаємо лише з JavaScript і лише тим, хто не просив менше руху.
+    var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!still && 'IntersectionObserver' in window) document.documentElement.classList.add('anim');
   })();
 </script>
 <style>
@@ -69,6 +72,8 @@
   html[lang="uk"] [lang="en"], html[lang="en"] [lang="uk"] { display: none !important; }
 
   * { box-sizing: border-box; }
+  /* Сяйва й нахилені телефони виходять за край — на телефонах це не має давати прокрутку вбік. */
+  html { overflow-x: hidden; }
   body {
     margin: 0;
     background: var(--bg);
@@ -162,9 +167,61 @@
   /* ---------- Трейлер ---------- */
   .trailer { display: grid; gap: 28px; justify-items: center; text-align: center; }
   .trailer .row-text { justify-items: center; }
+  .trailer-frame { position: relative; width: min(360px, 86vw); --tint: #7E57C2; }
   .trailer video {
-    display: block; width: min(360px, 86vw); height: auto; aspect-ratio: 9 / 16; border-radius: 24px;
+    display: block; width: 100%; height: auto; aspect-ratio: 9 / 16; border-radius: 24px;
     background: #000; box-shadow: var(--shadow);
+  }
+  /* Підказка над трейлером: при наведенні він грає без звуку, дотик вмикає звук. */
+  .trailer-hint {
+    position: absolute; left: 50%; top: 16px; transform: translateX(-50%);
+    display: inline-flex; align-items: center; gap: 8px; white-space: nowrap;
+    font: inherit; font-size: 13px; font-weight: 700; padding: 7px 14px; border-radius: 999px; border: 0;
+    background: rgba(20, 18, 24, 0.72); color: #fff; cursor: pointer;
+    backdrop-filter: blur(8px); transition: opacity .3s, transform .3s;
+  }
+  .trailer-hint svg { width: 16px; height: 16px; fill: currentColor; }
+  .trailer-frame.sound .trailer-hint { opacity: 0; transform: translate(-50%, -8px); pointer-events: none; }
+  .trailer-frame.playing .hint-idle, .trailer-frame:not(.playing) .hint-muted { display: none; }
+
+  /* ---------- Анімації ----------
+     Клас .anim ставить скрипт: без JavaScript усе просто видно, без руху. */
+  @keyframes rise { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+  @keyframes float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -10px; } }
+  @keyframes breathe { 0%, 100% { opacity: .35; scale: 1; } 50% { opacity: .6; scale: 1.08; } }
+  @keyframes shine { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+
+  .anim .hero-text > * { animation: rise .8s cubic-bezier(.2,.7,.2,1) both; }
+  .anim .hero-text > :nth-child(2) { animation-delay: .1s; }
+  .anim .hero-text > :nth-child(3) { animation-delay: .2s; }
+  .anim .hero-text > :nth-child(4) { animation-delay: .3s; }
+  .anim .hero-media { animation: rise 1s .15s cubic-bezier(.2,.7,.2,1) both; }
+  .anim .hero-media .tilt { animation: float 6s ease-in-out infinite; }
+  .anim .glow::before { animation: breathe 7s ease-in-out infinite; }
+  .anim h1 {
+    background: linear-gradient(100deg, var(--text) 40%, var(--accent) 50%, var(--text) 60%) 0 0 / 200% 100%;
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    animation: rise .8s cubic-bezier(.2,.7,.2,1) both, shine 6s 1.2s ease-in-out infinite;
+  }
+  /* Нахил телефона за курсором: --rx/--ry пише скрипт. */
+  .tilt { transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); transition: transform .25s ease-out; }
+
+  .anim .reveal { opacity: 0; transform: translateY(40px); transition: opacity .9s cubic-bezier(.2,.7,.2,1), transform .9s cubic-bezier(.2,.7,.2,1); }
+  .anim .reveal.in { opacity: 1; transform: none; }
+  .anim .shots.reveal .phone { opacity: 0; transform: translateY(60px) rotate(-4deg); transition: opacity .9s, transform 1s cubic-bezier(.2,.7,.2,1); }
+  .anim .shots.reveal .phone + .phone { transform: translateY(90px) rotate(5deg); transition-delay: .18s; }
+  .anim .shots.reveal.in .phone { opacity: 1; transform: none; }
+  .anim .features.reveal .feature { opacity: 0; transform: translateY(24px); transition: opacity .6s, transform .6s cubic-bezier(.2,.7,.2,1), background-color .2s; }
+  .anim .features.reveal.in .feature { opacity: 1; transform: none; }
+  .anim .features.reveal.in .feature:nth-child(2) { transition-delay: .08s; }
+  .anim .features.reveal.in .feature:nth-child(3) { transition-delay: .16s; }
+  .anim .features.reveal.in .feature:nth-child(4) { transition-delay: .24s; }
+
+  .shots .phone { transition: transform .4s cubic-bezier(.2,.7,.2,1), box-shadow .4s; }
+  @media (hover: hover) {
+    .anim .shots.in .phone:hover { transform: translateY(-10px) scale(1.03); z-index: 1; }
+    .feature:hover { background: var(--accent-soft); }
+    .feature:hover span { color: var(--on-accent-soft); }
   }
 
   .privacy { display: grid; gap: 12px; max-width: 40em; }
@@ -182,6 +239,7 @@
   }
   @media (prefers-reduced-motion: reduce) {
     .media-toggle { display: none; }
+    .trailer-hint { display: none; }
   }
 </style>
 </head>
@@ -218,7 +276,7 @@
         </div>
       </div>
       <div class="hero-media glow">
-        <div class="phone">
+        <div class="phone tilt" id="hero-phone">
           <video id="hero-video" src="media/cover-flip.mp4" poster="media/cover-flip.webp"
                  autoplay muted loop playsinline preload="auto" width="540" height="1090"
                  data-alt-uk="Плеєр: обкладинка перевертається, під нею список глав"
@@ -334,9 +392,16 @@
         <span class="eyebrow"><span lang="uk">Відео</span><span lang="en">Video</span></span>
         <h2><span lang="uk">Sonaris за хвилину</span><span lang="en">Sonaris in a minute</span></h2>
       </div>
-      <video src="media/trailer.mp4" poster="media/trailer.webp" controls playsinline preload="none"
-             width="720" height="1280"
-             data-alt-uk="Відеоогляд Sonaris" data-alt-en="Sonaris video tour"></video>
+      <div class="trailer-frame glow" id="trailer-frame">
+        <video id="trailer-video" src="media/trailer.mp4" poster="media/trailer.webp" controls playsinline preload="metadata"
+               width="720" height="1280"
+               data-alt-uk="Відеоогляд Sonaris" data-alt-en="Sonaris video tour"></video>
+        <button type="button" class="trailer-hint" id="trailer-hint">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></svg>
+          <span class="hint-idle"><span lang="uk">Наведіть — і відео заграє</span><span lang="en">Hover to play</span></span>
+          <span class="hint-muted"><span lang="uk">Натисніть, щоб увімкнути звук</span><span lang="en">Tap for sound</span></span>
+        </button>
+      </div>
     </section>
 
     <section class="privacy">
@@ -386,6 +451,78 @@
     });
     video.addEventListener('play', function () { toggle.setAttribute('aria-pressed', 'false'); });
     video.addEventListener('pause', function () { toggle.setAttribute('aria-pressed', 'true'); });
+
+    var animated = document.documentElement.classList.contains('anim');
+
+    // Поява розділів при прокручуванні.
+    if (animated) {
+      var targets = document.querySelectorAll('.row-text, .shots, .more > h2, .features, .trailer .row-text, .trailer-frame, .privacy');
+      var seen = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { e.target.classList.add('in'); seen.unobserve(e.target); }
+        });
+      }, { rootMargin: '0px 0px -12% 0px' });
+      targets.forEach(function (el) { el.classList.add('reveal'); seen.observe(el); });
+    }
+
+    // Телефон на першому екрані трохи нахиляється за курсором.
+    var phone = document.getElementById('hero-phone');
+    var hero = document.querySelector('.hero');
+    if (animated && window.matchMedia('(hover: hover)').matches) {
+      hero.addEventListener('pointermove', function (e) {
+        var r = phone.getBoundingClientRect();
+        var x = (e.clientX - (r.left + r.width / 2)) / window.innerWidth;
+        var y = (e.clientY - (r.top + r.height / 2)) / window.innerHeight;
+        phone.style.setProperty('--ry', (x * 16).toFixed(2) + 'deg');
+        phone.style.setProperty('--rx', (-y * 12).toFixed(2) + 'deg');
+      });
+      hero.addEventListener('pointerleave', function () {
+        phone.style.setProperty('--ry', '0deg');
+        phone.style.setProperty('--rx', '0deg');
+      });
+    }
+
+    // Трейлер: при наведенні грає без звуку й зупиняється, коли курсор іде.
+    // На сенсорних екранах те саме робить прокручування: грає, поки відео на екрані.
+    // Браузери не дають автоматично грати зі звуком, тому звук — лише після дотику.
+    // Щойно людина сама взялась за відео (звук, кнопки) — більше ним не керуємо.
+    var frame = document.getElementById('trailer-frame');
+    var trailer = document.getElementById('trailer-video');
+    var hint = document.getElementById('trailer-hint');
+    var engaged = false;
+    function autoPlay() {
+      if (engaged || !trailer.paused) return;
+      trailer.muted = true;
+      var p = trailer.play();
+      if (p && p.catch) p.catch(function () {});
+    }
+    function autoPause() {
+      if (!engaged && !trailer.paused) trailer.pause();
+    }
+    function engage() {
+      engaged = true;
+      trailer.muted = false;
+      frame.classList.add('sound');
+      if (trailer.paused) trailer.play();
+    }
+    trailer.addEventListener('play', function () { frame.classList.add('playing'); });
+    trailer.addEventListener('pause', function () { frame.classList.remove('playing'); });
+    trailer.addEventListener('volumechange', function () {
+      if (!trailer.muted && !engaged) { engaged = true; frame.classList.add('sound'); }
+    });
+    // Клік по самому відео (а не по нашій підказці) — теж ознака, що людина керує сама.
+    trailer.addEventListener('click', function () { engaged = true; });
+    hint.addEventListener('click', engage);
+    if (animated) {
+      if (window.matchMedia('(hover: hover)').matches) {
+        frame.addEventListener('pointerenter', autoPlay);
+        frame.addEventListener('pointerleave', autoPause);
+      } else {
+        new IntersectionObserver(function (entries) {
+          entries.forEach(function (e) { if (e.isIntersecting) autoPlay(); else autoPause(); });
+        }, { threshold: 0.6 }).observe(frame);
+      }
+    }
   })();
 </script>
 </body>
