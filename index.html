@@ -5,12 +5,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Sonaris — офлайн-плеєр аудіокниг для Android / an offline audiobook player for Android">
 <meta name="color-scheme" content="light dark">
+<meta property="og:title" content="Sonaris — Audiobooks">
+<meta property="og:description" content="Audiobooks from your phone — no accounts, no ads.">
+<meta property="og:image" content="media/trailer.webp">
 <title>Sonaris — Audiobooks</title>
 <link rel="icon" href="icon.png" sizes="192x192">
 <link rel="apple-touch-icon" href="icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap">
+<script>
+  /* Мову обираємо ще в <head>, до першого малювання: інакше англомовний
+     відвідувач на мить бачить українську версію. */
+  (function () {
+    var saved = null;
+    try { saved = localStorage.getItem('sonaris-privacy-lang'); } catch (e) {}
+    var guess = (navigator.language || '').toLowerCase().indexOf('uk') === 0 ? 'uk' : 'en';
+    document.documentElement.lang = saved === 'uk' || saved === 'en' ? saved : guess;
+  })();
+</script>
 <style>
   :root {
     --bg: #E9E3EE;
@@ -21,6 +34,8 @@
     --accent: #6750A4;
     --accent-soft: #EADDFF;
     --on-accent-soft: #21005D;
+    --frame: #1D1B20;
+    --shadow: 0 24px 60px -20px rgba(29, 27, 32, 0.45);
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
@@ -32,6 +47,8 @@
       --accent: #D0BCFF;
       --accent-soft: #4F378B;
       --on-accent-soft: #EADDFF;
+      --frame: #2B2930;
+      --shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.8);
     }
   }
   :root[data-theme="dark"] {
@@ -43,7 +60,15 @@
     --accent: #D0BCFF;
     --accent-soft: #4F378B;
     --on-accent-soft: #EADDFF;
+    --frame: #2B2930;
+    --shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.8);
   }
+  /* Перемикач мов: кожен текст лежить парою <span lang="uk">/<span lang="en">,
+     видно лише ту, що збігається з мовою сторінки. Одна розмітка на обидві мови —
+     щоб картинки й відео не дублювались. */
+  html[lang="uk"] [lang="en"], html[lang="en"] [lang="uk"] { display: none !important; }
+
+  * { box-sizing: border-box; }
   body {
     margin: 0;
     background: var(--bg);
@@ -52,8 +77,10 @@
     font-size: 16px;
     line-height: 1.6;
     padding: 0 16px;
+    overflow-x: hidden;
   }
-  .page { max-width: 680px; margin: 0 auto; padding-block: 40px 64px; display: grid; gap: 32px; }
+  .page { max-width: 1040px; margin: 0 auto; padding-block: 32px 64px; display: grid; gap: 56px; }
+  .content { display: grid; gap: 96px; }
   header { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
   /* Іконка застосунку поруч із назвою: маленька, з тим самим радіусом,
      що й на Android, щоб сайт і застосунок впізнавались як одне. */
@@ -65,26 +92,97 @@
     border: 1px solid var(--line); background: transparent; color: var(--text); cursor: pointer;
   }
   .lang button[aria-pressed="true"] { background: var(--accent-soft); color: var(--on-accent-soft); border-color: transparent; }
-  .lang button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  article { display: grid; gap: 32px; }
-  .intro { display: grid; gap: 12px; }
-  h1 { margin: 0; font-size: clamp(32px, 7vw, 46px); line-height: 1.1; font-weight: 800; text-wrap: balance; }
-  .lead { margin: 0; font-size: 18px; color: var(--muted); max-width: 34em; }
-  .status {
-    justify-self: start; font-size: 14px; font-weight: 600; padding: 6px 14px; border-radius: 999px;
-    background: var(--accent-soft); color: var(--on-accent-soft);
-  }
-  h2 { margin: 0; font-size: 21px; font-weight: 700; }
-  section { display: grid; gap: 12px; }
-  .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
-  .feature { background: var(--surface); border-radius: 16px; padding: 16px 18px; display: grid; gap: 4px; }
-  .feature strong { font-weight: 700; }
-  .feature span { color: var(--muted); font-size: 15px; }
+  button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   p { margin: 0; }
   a { color: var(--accent); text-underline-offset: 3px; }
+  h1, h2, h3 { margin: 0; text-wrap: balance; }
+
+  /* ---------- Телефон ---------- */
+  .phone {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 540 / 1100;
+    border-radius: 34px;
+    padding: 7px;
+    background: var(--frame);
+    box-shadow: var(--shadow);
+  }
+  .phone img, .phone video {
+    display: block; width: 100%; height: 100%; object-fit: cover; object-position: top;
+    border-radius: 28px; background: #000;
+  }
+  /* Кольорове сяйво за телефоном — як у застосунку, де плеєр бере колір з обкладинки. */
+  .glow { position: relative; isolation: isolate; }
+  .glow::before {
+    content: ""; position: absolute; inset: 12% -10%; z-index: -1;
+    background: radial-gradient(closest-side, var(--tint, #6750A4), transparent);
+    opacity: 0.45; filter: blur(40px);
+  }
+
+  /* ---------- Перший екран ---------- */
+  .hero { display: grid; gap: 48px; align-items: center; }
+  .hero-text { display: grid; gap: 18px; justify-items: start; }
+  h1 { font-size: clamp(34px, 6.4vw, 56px); line-height: 1.06; font-weight: 800; letter-spacing: -0.02em; }
+  .lead { font-size: 18px; color: var(--muted); max-width: 32em; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 0; list-style: none; }
+  .chips li { font-size: 14px; font-weight: 600; padding: 5px 12px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
+  .cta { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; }
+  .status { font-size: 15px; font-weight: 700; padding: 10px 18px; border-radius: 999px; background: var(--accent-soft); color: var(--on-accent-soft); }
+  .cta a { font-weight: 700; }
+  .hero-media { justify-self: center; width: min(300px, 78vw); --tint: #C62828; }
+  .media-toggle {
+    position: absolute; right: 18px; bottom: 18px; width: 40px; height: 40px; border-radius: 50%;
+    border: 0; background: rgba(20, 18, 24, 0.7); color: #fff; cursor: pointer; display: grid; place-items: center;
+  }
+  .media-toggle svg { width: 18px; height: 18px; fill: currentColor; }
+  .media-toggle .i-play { display: none; }
+  .media-toggle[aria-pressed="true"] .i-play { display: block; }
+  .media-toggle[aria-pressed="true"] .i-pause { display: none; }
+
+  /* ---------- Розділи з екранами ---------- */
+  .showcase { display: grid; gap: 96px; }
+  .row { display: grid; gap: 32px; align-items: center; }
+  .row-text { display: grid; gap: 12px; max-width: 30em; }
+  .eyebrow { font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+  h2 { font-size: clamp(26px, 4.4vw, 36px); line-height: 1.15; font-weight: 800; letter-spacing: -0.01em; }
+  .row-text p { color: var(--muted); font-size: 17px; }
+  .shots { display: flex; justify-content: center; align-items: flex-start; }
+  .shots .phone { width: min(260px, 64vw); }
+  /* Пара екранів: другий трохи нижче й заходить на перший. */
+  .shots.pair .phone { width: min(230px, 46vw); }
+  .shots.pair .phone + .phone { margin-left: -14%; margin-top: 18%; }
+
+  /* ---------- Дрібніші функції ---------- */
+  .more { display: grid; gap: 20px; }
+  .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; }
+  .feature { background: var(--surface); border-radius: 20px; padding: 18px 20px; display: grid; gap: 4px; align-content: start; }
+  .feature strong { font-weight: 700; }
+  .feature span { color: var(--muted); font-size: 15px; }
+
+  /* ---------- Трейлер ---------- */
+  .trailer { display: grid; gap: 28px; justify-items: center; text-align: center; }
+  .trailer .row-text { justify-items: center; }
+  .trailer video {
+    display: block; width: min(360px, 86vw); height: auto; aspect-ratio: 9 / 16; border-radius: 24px;
+    background: #000; box-shadow: var(--shadow);
+  }
+
+  .privacy { display: grid; gap: 12px; max-width: 40em; }
+  .privacy p { color: var(--muted); font-size: 17px; }
   footer { color: var(--muted); font-size: 14px; border-top: 1px solid var(--line); padding-top: 18px; display: flex; gap: 16px; flex-wrap: wrap; }
-  /* Без цього display:grid на блоках мов перебиває атрибут hidden, і видно обидві мови. */
-  [hidden] { display: none !important; }
+
+  @media (min-width: 820px) {
+    .page { padding-top: 40px; gap: 72px; }
+    .content { gap: 128px; }
+    .hero { grid-template-columns: 1.15fr 0.85fr; }
+    .hero-media { width: 300px; }
+    .row { grid-template-columns: 1fr 1fr; gap: 64px; }
+    .row.flip .row-text { order: 2; }
+    .showcase { gap: 128px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .media-toggle { display: none; }
+  }
 </style>
 </head>
 <body>
@@ -92,63 +190,166 @@
   <header>
     <div class="app"><img src="icon.png" alt="" width="28" height="28">Sonaris — Audiobooks</div>
     <div class="lang" role="group" aria-label="Language / Мова">
-      <button type="button" id="btn-uk" data-lang="uk" aria-pressed="true">UA</button>
-      <button type="button" id="btn-en" data-lang="en" aria-pressed="false">EN</button>
+      <button type="button" data-lang="uk" aria-pressed="true">UA</button>
+      <button type="button" data-lang="en" aria-pressed="false">EN</button>
     </div>
   </header>
 
-  <article lang="uk" id="uk">
-    <div class="intro">
-      <h1>Аудіокниги з вашого телефона — без акаунтів і реклами</h1>
-      <p class="lead">Sonaris грає аудіокниги, які вже лежать у вас на телефоні: MP3, M4A, M4B, Opus. Пам'ятає, де ви зупинились, і допомагає заснути під книгу, не втративши місця.</p>
-      <span class="status">Скоро в Google Play</span>
-    </div>
-
-    <section>
-      <h2>Що вміє</h2>
-      <div class="features">
-        <div class="feature"><strong>Бібліотека з папки</strong><span>Кожна підпапка — книга. Серії збираються самі, глави M4B — з файлу.</span></div>
-        <div class="feature"><strong>Таймер сну</strong><span>Плавно стишує звук, а вранці відмотує на місце, де ви заснули.</span></div>
-        <div class="feature"><strong>Швидкість і звук на книгу</strong><span>Своя швидкість, тональність і еквалайзер для кожної книги.</span></div>
-        <div class="feature"><strong>Відкат після паузи</strong><span>Що довша пауза, то далі назад — щоб не губити нитку.</span></div>
-        <div class="feature"><strong>Закладки й історія</strong><span>Закладки з нотатками, історія прослуховування й статистика.</span></div>
-        <div class="feature"><strong>Віджет і гарнітура</strong><span>Керування з головного екрана, сповіщення й кнопками навушників.</span></div>
+  <main class="content">
+    <section class="hero">
+      <div class="hero-text">
+        <h1>
+          <span lang="uk">Аудіокниги з вашого телефона — без акаунтів і реклами</span>
+          <span lang="en">Audiobooks from your phone — no accounts, no ads</span>
+        </h1>
+        <p class="lead">
+          <span lang="uk">Sonaris грає аудіокниги, які вже лежать у вас на телефоні. Пам'ятає, де ви зупинились, і допомагає заснути під книгу, не втративши місця.</span>
+          <span lang="en">Sonaris plays the audiobooks already on your phone. It remembers where you stopped and lets you fall asleep to a book without losing your place.</span>
+        </p>
+        <ul class="chips">
+          <li>MP3 · M4A · M4B · Opus</li>
+          <li><span lang="uk">Офлайн</span><span lang="en">Offline</span></li>
+          <li><span lang="uk">Без акаунтів</span><span lang="en">No accounts</span></li>
+          <li><span lang="uk">Без реклами</span><span lang="en">No ads</span></li>
+        </ul>
+        <div class="cta">
+          <span class="status"><span lang="uk">Скоро в Google Play</span><span lang="en">Coming soon to Google Play</span></span>
+          <a href="#trailer"><span lang="uk">Дивитись відео →</span><span lang="en">Watch the video →</span></a>
+        </div>
+      </div>
+      <div class="hero-media glow">
+        <div class="phone">
+          <video id="hero-video" src="media/cover-flip.mp4" poster="media/cover-flip.webp"
+                 autoplay muted loop playsinline preload="auto" width="540" height="1090"
+                 data-alt-uk="Плеєр: обкладинка перевертається, під нею список глав"
+                 data-alt-en="Player: the cover flips over to reveal the chapter list"></video>
+          <button type="button" class="media-toggle" id="hero-toggle" aria-pressed="false" aria-label="Pause / Пауза">
+            <svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>
+            <svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+        </div>
       </div>
     </section>
 
-    <section>
-      <h2>Приватність</h2>
-      <p>Усе зберігається на телефоні. В інтернет застосунок звертається, лише коли ви самі шукаєте обкладинку чи опис. Докладно — у <a href="privacy/">політиці конфіденційності</a>.</p>
-    </section>
-  </article>
+    <div class="showcase">
+      <section class="row">
+        <div class="row-text">
+          <span class="eyebrow"><span lang="uk">Бібліотека з папки</span><span lang="en">Library from a folder</span></span>
+          <h2><span lang="uk">Кожна підпапка — книга</span><span lang="en">Each subfolder is a book</span></h2>
+          <p>
+            <span lang="uk">Вкажіть папку з аудіокнигами — і бібліотека готова. Серії збираються самі й показують, скільки книг уже прослухано. Сіткою чи списком, з фільтрами «Слухаю», «Нещодавні», «Прослухані».</span>
+            <span lang="en">Point Sonaris at your audiobook folder and the library is ready. Series group themselves and show how many books you’ve finished. Grid or list, with Listening, Recent and Finished filters.</span>
+          </p>
+        </div>
+        <div class="shots glow" style="--tint:#7E57C2">
+          <div class="phone"><img src="media/library-grid.webp" width="540" height="1101" loading="lazy"
+               data-alt-uk="Бібліотека сіткою: Дракула, серії Барсум і Шерлок Голмс"
+               data-alt-en="Library grid: Dracula and the Barsoom and Sherlock Holmes series" alt=""></div>
+        </div>
+      </section>
 
-  <article lang="en" id="en" hidden>
-    <div class="intro">
-      <h1>Audiobooks from your phone — no accounts, no ads</h1>
-      <p class="lead">Sonaris plays the audiobooks already on your phone: MP3, M4A, M4B, Opus. It remembers where you stopped and lets you fall asleep to a book without losing your place.</p>
-      <span class="status">Coming soon to Google Play</span>
+      <section class="row flip">
+        <div class="row-text">
+          <span class="eyebrow"><span lang="uk">Колір з обкладинки</span><span lang="en">Cover colours</span></span>
+          <h2><span lang="uk">Плеєр вдягає кольори книги</span><span lang="en">The player wears the cover’s colours</span></h2>
+          <p>
+            <span lang="uk">Фон, прогрес і рамка беруть колір з обкладинки, тож кожна книга виглядає по-своєму. Рамка навколо обкладинки — це прогрес усієї книги.</span>
+            <span lang="en">The background, progress bar and frame take their colour from the cover, so every book looks like itself. The frame around the cover is the progress of the whole book.</span>
+          </p>
+        </div>
+        <div class="shots pair glow" style="--tint:#C62828">
+          <div class="phone"><img src="media/player-baskervilles.webp" width="540" height="1101" loading="lazy"
+               data-alt-uk="Плеєр у червоно-золотих тонах «Собаки Баскервілів»"
+               data-alt-en="Player in the red and gold of The Hound of the Baskervilles" alt=""></div>
+          <div class="phone"><img src="media/player-dracula.webp" width="540" height="1101" loading="lazy"
+               data-alt-uk="Плеєр «Дракули»: рамка прогресу заповнена наполовину, швидкість 1.4×"
+               data-alt-en="Dracula player: the progress frame half full, speed 1.4×" alt=""></div>
+        </div>
+      </section>
+
+      <section class="row">
+        <div class="row-text">
+          <span class="eyebrow"><span lang="uk">Глави</span><span lang="en">Chapters</span></span>
+          <h2><span lang="uk">Глави M4B — прямо з файлу</span><span lang="en">M4B chapters, straight from the file</span></h2>
+          <p>
+            <span lang="uk">Торкніться обкладинки — вона перевернеться, а під нею список глав і опис книги. Поточна глава підсвічена, до будь-якої — один дотик.</span>
+            <span lang="en">Tap the cover and it flips over to show the chapter list and the book’s description. The current chapter is highlighted; any other is one tap away.</span>
+          </p>
+        </div>
+        <div class="shots glow" style="--tint:#1E88E5">
+          <div class="phone"><img src="media/chapters.webp" width="540" height="1101" loading="lazy"
+               data-alt-uk="Список глав «Принцеси Марса» на звороті обкладинки"
+               data-alt-en="Chapter list of A Princess of Mars on the back of the cover" alt=""></div>
+        </div>
+      </section>
+
+      <section class="row flip">
+        <div class="row-text">
+          <span class="eyebrow"><span lang="uk">Таймер сну</span><span lang="en">Sleep timer</span></span>
+          <h2><span lang="uk">Засинайте під книгу — місце не загубиться</span><span lang="en">Fall asleep to a book without losing your place</span></h2>
+          <p>
+            <span lang="uk">Таймер плавно стишує звук, а вранці відмотує туди, де ви заснули. Кожне прослуховування лишається в історії — з часом, главами й позначкою місяця, якщо спрацював таймер.</span>
+            <span lang="en">The timer fades the sound out, and in the morning rewinds to where you dozed off. Every session stays in the history — with times, chapters and a moon when the timer stopped it.</span>
+          </p>
+        </div>
+        <div class="shots glow" style="--tint:#8E24AA">
+          <div class="phone"><img src="media/history.webp" width="540" height="1101" loading="lazy"
+               data-alt-uk="Історія прослуховування «Дракули» по днях"
+               data-alt-en="Day-by-day listening history for Dracula" alt=""></div>
+        </div>
+      </section>
+
+      <section class="row">
+        <div class="row-text">
+          <span class="eyebrow"><span lang="uk">Статистика</span><span lang="en">Statistics</span></span>
+          <h2><span lang="uk">Скільки слухаєте — і за скільки дочитали</span><span lang="en">How much you listen — and how long each book took</span></h2>
+          <p>
+            <span lang="uk">Час за день, тиждень, місяць і рік, серія днів поспіль і графік. А в прослуханих книгах видно, за скільки днів ви кожну подужали.</span>
+            <span lang="en">Time per day, week, month and year, your streak and a chart. And finished books show how many days each one took.</span>
+          </p>
+        </div>
+        <div class="shots pair glow" style="--tint:#5E35B1">
+          <div class="phone"><img src="media/stats.webp" width="540" height="1101" loading="lazy"
+               data-alt-uk="Статистика: усього 41 год 34 хв, серія 15 днів, графік по днях"
+               data-alt-en="Statistics: 41 h 34 min total, a 15-day streak and a daily chart" alt=""></div>
+          <div class="phone"><img src="media/finished.webp" width="540" height="1101" loading="lazy"
+               data-alt-uk="Прослухані книги з позначкою «Прослухано за 37 днів»"
+               data-alt-en="Finished books, each marked “Listened in N days”" alt=""></div>
+        </div>
+      </section>
     </div>
 
-    <section>
-      <h2>What it does</h2>
+    <section class="more">
+      <h2><span lang="uk">І ще</span><span lang="en">And also</span></h2>
       <div class="features">
-        <div class="feature"><strong>Library from a folder</strong><span>Each subfolder is a book. Series group themselves; M4B chapters come from the file.</span></div>
-        <div class="feature"><strong>Sleep timer</strong><span>Fades the sound out, and in the morning rewinds to where you fell asleep.</span></div>
-        <div class="feature"><strong>Speed and sound per book</strong><span>Each book keeps its own speed, pitch and equalizer.</span></div>
-        <div class="feature"><strong>Rewind after pause</strong><span>The longer the pause, the further back — so you don’t lose the thread.</span></div>
-        <div class="feature"><strong>Bookmarks and history</strong><span>Bookmarks with notes, listening history and stats.</span></div>
-        <div class="feature"><strong>Widget and headset</strong><span>Control from the home screen, the notification and headphone buttons.</span></div>
+        <div class="feature"><strong><span lang="uk">Швидкість і звук на книгу</span><span lang="en">Speed and sound per book</span></strong><span><span lang="uk">Своя швидкість, тональність і еквалайзер для кожної книги.</span><span lang="en">Each book keeps its own speed, pitch and equalizer.</span></span></div>
+        <div class="feature"><strong><span lang="uk">Відкат після паузи</span><span lang="en">Rewind after pause</span></strong><span><span lang="uk">Що довша пауза, то далі назад — щоб не губити нитку.</span><span lang="en">The longer the pause, the further back — so you don’t lose the thread.</span></span></div>
+        <div class="feature"><strong><span lang="uk">Закладки</span><span lang="en">Bookmarks</span></strong><span><span lang="uk">Закладки з нотатками; довгий дотик — швидка закладка.</span><span lang="en">Bookmarks with notes; a long press adds one instantly.</span></span></div>
+        <div class="feature"><strong><span lang="uk">Віджет і гарнітура</span><span lang="en">Widget and headset</span></strong><span><span lang="uk">Керування з головного екрана, сповіщення й кнопками навушників.</span><span lang="en">Control from the home screen, the notification and headphone buttons.</span></span></div>
       </div>
     </section>
 
-    <section>
-      <h2>Privacy</h2>
-      <p>Everything stays on your phone. The app goes online only when you search for a cover or description. Details are in the <a href="privacy/">privacy policy</a>.</p>
+    <section class="trailer" id="trailer">
+      <div class="row-text">
+        <span class="eyebrow"><span lang="uk">Відео</span><span lang="en">Video</span></span>
+        <h2><span lang="uk">Sonaris за хвилину</span><span lang="en">Sonaris in a minute</span></h2>
+      </div>
+      <video src="media/trailer.mp4" poster="media/trailer.webp" controls playsinline preload="none"
+             width="720" height="1280"
+             data-alt-uk="Відеоогляд Sonaris" data-alt-en="Sonaris video tour"></video>
     </section>
-  </article>
+
+    <section class="privacy">
+      <h2><span lang="uk">Приватність</span><span lang="en">Privacy</span></h2>
+      <p>
+        <span lang="uk">Усе зберігається на телефоні. В інтернет застосунок звертається, лише коли ви самі шукаєте обкладинку чи опис. Докладно — у <a href="privacy/">політиці конфіденційності</a>.</span>
+        <span lang="en">Everything stays on your phone. The app goes online only when you search for a cover or description. Details are in the <a href="privacy/">privacy policy</a>.</span>
+      </p>
+    </section>
+  </main>
 
   <footer>
-    <a href="privacy/" id="footer-privacy">Політика конфіденційності / Privacy policy</a>
+    <a href="privacy/">Політика конфіденційності / Privacy policy</a>
     <a href="mailto:resolid.3d@gmail.com">resolid.3d@gmail.com</a>
   </footer>
 </div>
@@ -156,20 +357,35 @@
   (function () {
     var buttons = document.querySelectorAll('.lang button');
     function show(lang) {
-      ['uk', 'en'].forEach(function (l) { document.getElementById(l).hidden = l !== lang; });
-      buttons.forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.lang === lang)); });
       document.documentElement.lang = lang;
+      buttons.forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.lang === lang)); });
+      // alt і aria-label одномовні, тож перемикаємо їх разом із текстом.
+      document.querySelectorAll('[data-alt-uk]').forEach(function (el) {
+        var text = el.getAttribute('data-alt-' + lang);
+        if (el.tagName === 'IMG') el.alt = text; else el.setAttribute('aria-label', text);
+      });
     }
-    var saved = null;
-    try { saved = localStorage.getItem('sonaris-privacy-lang'); } catch (e) {}
-    var guess = (navigator.language || '').toLowerCase().indexOf('uk') === 0 ? 'uk' : 'en';
-    show(saved === 'uk' || saved === 'en' ? saved : guess);
+    show(document.documentElement.lang === 'en' ? 'en' : 'uk');
     buttons.forEach(function (b) {
       b.addEventListener('click', function () {
         show(b.dataset.lang);
         try { localStorage.setItem('sonaris-privacy-lang', b.dataset.lang); } catch (e) {}
       });
     });
+
+    // Живий запис на першому екрані крутиться сам, але його можна зупинити;
+    // хто просить менше руху — бачить лише перший кадр.
+    var video = document.getElementById('hero-video');
+    var toggle = document.getElementById('hero-toggle');
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      video.removeAttribute('autoplay');
+      video.pause();
+    }
+    toggle.addEventListener('click', function () {
+      if (video.paused) video.play(); else video.pause();
+    });
+    video.addEventListener('play', function () { toggle.setAttribute('aria-pressed', 'false'); });
+    video.addEventListener('pause', function () { toggle.setAttribute('aria-pressed', 'true'); });
   })();
 </script>
 </body>
