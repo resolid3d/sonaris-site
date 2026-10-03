@@ -72,9 +72,10 @@
   html[lang="uk"] [lang="en"], html[lang="en"] [lang="uk"] { display: none !important; }
 
   * { box-sizing: border-box; }
-  /* Сяйва виходять за край — це не має давати прокрутку вбік. Лише на html:
-     якби й body мав overflow, він став би окремим контейнером прокрутки й
-     прокрутка по секціях (scroll-snap на html) його б не бачила. */
+  /* Сяйва виходять за край — це не має давати прокрутку вбік. На body лише
+     overflow-x: clip (нижче): hidden зробив би його окремим контейнером прокрутки,
+     і прокрутка по секціях (scroll-snap на html) його б не бачила.
+     hidden на html — запас для браузерів без clip. */
   html { overflow-x: hidden; }
   body {
     margin: 0;
@@ -84,6 +85,10 @@
     font-size: 16px;
     line-height: 1.6;
     padding: 0 16px;
+    /* clip, а не hidden: обрізає сяйва, що виходять за край, і при цьому не робить
+       body контейнером прокрутки. Без цього на телефоні сторінка ставала ширшою
+       за екран (396 px на 375) і смикалась убік. */
+    overflow-x: clip;
   }
   .page { max-width: 1040px; margin: 0 auto; padding-block: 32px 64px; display: grid; gap: 56px; }
   .content { display: grid; gap: 96px; }
@@ -276,7 +281,6 @@
   .anim .hero-text > :nth-child(3) { animation-delay: .2s; }
   .anim .hero-text > :nth-child(4) { animation-delay: .3s; }
   .anim .hero-media { animation: rise 1s .15s cubic-bezier(.2,.7,.2,1) backwards; }
-  .anim .glow::before { animation: breathe 7s ease-in-out infinite; }
   .anim h1 {
     background: linear-gradient(100deg, var(--text) 40%, var(--accent) 50%, var(--text) 60%) 0 0 / 200% 100%;
     -webkit-background-clip: text; background-clip: text; color: transparent;
@@ -316,9 +320,9 @@
 
   /* ---------- Прокрутка по секціях ----------
      Кожна секція — на весь екран, прокрутка доводить до найближчої.
-     На вузьких або низьких екранах секції вищі за екран, тому там лише м'яке
-     притягування (proximity), щоб не заважати читати. */
-  html { scroll-snap-type: y proximity; scroll-behavior: smooth; }
+     На вузьких або низьких екранах секції вищі за екран — там звичайна прокрутка
+     без притягування: на телефоні воно перескакувало посеред читання. */
+  html { scroll-behavior: smooth; }
   header, .row, .more, .trailer { scroll-snap-align: start; scroll-margin-top: 16px; }
   footer { scroll-snap-align: end; }
 
@@ -350,6 +354,8 @@
   }
   @media (min-width: 820px) and (min-height: 620px) {
     html { scroll-snap-type: y mandatory; }
+    /* Пульсація розмитих сяйв дорога для відеокарти телефона — лише тут. */
+    .anim .glow::before { animation: breathe 7s ease-in-out infinite; }
     .page { gap: 0; padding-block: 0; }
     .content, .showcase { gap: 0; }
     header { padding-top: 32px; scroll-margin-top: 0; }
@@ -716,13 +722,16 @@
 
     // Поява розділів: щоразу, як елемент заходить на екран, і скидається,
     // коли він повністю пішов — тож перехід між секціями грає в обидва боки.
+    // Повтор появи при поверненні — лише там, де гортаємо по секціях. На телефоні
+    // зникання й поява під пальцем виглядали як стрибки вмісту.
+    var replay = window.matchMedia('(min-width: 820px) and (min-height: 620px)');
     if (animated) {
       var targets = document.querySelectorAll('.row-text, .shots, .rewind, .more > h2, .features, .trailer .row-text, .trailer-frame');
       var seen = new IntersectionObserver(function (entries) {
         entries.forEach(function (e) {
           var el = e.target, isIn = el.classList.contains('in');
           if (e.intersectionRatio >= 0.2 && !isIn) { el.classList.add('in'); counters(el, true); }
-          else if (!e.isIntersecting && isIn) { el.classList.remove('in'); counters(el, false); }
+          else if (!e.isIntersecting && isIn && replay.matches) { el.classList.remove('in'); counters(el, false); }
         });
       }, { threshold: [0, 0.2] });
       targets.forEach(function (el) { el.classList.add('reveal'); seen.observe(el); });
