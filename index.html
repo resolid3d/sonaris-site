@@ -409,7 +409,7 @@
       <div class="hero-media glow">
         <div class="phone">
           <video id="hero-video" src="media/cover-flip.mp4" poster="media/cover-flip.webp"
-                 autoplay muted loop playsinline preload="auto" width="540" height="1090"
+                 muted loop playsinline preload="auto" width="540" height="1090"
                  data-alt-uk="Плеєр: обкладинка перевертається, під нею список глав"
                  data-alt-en="Player: the cover flips over to reveal the chapter list"></video>
           <button type="button" class="media-toggle" id="hero-toggle" aria-pressed="false" aria-label="Pause / Пауза">
@@ -634,11 +634,31 @@
     // хто просить менше руху — бачить лише перший кадр.
     var video = document.getElementById('hero-video');
     var toggle = document.getElementById('hero-toggle');
-    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      video.removeAttribute('autoplay');
-      video.pause();
+    // Запис обрізано так, що обкладинка перевертається приблизно через секунду.
+    // Стартуємо, коли телефон уже виїхав на екран (анімація появи ~1 с), а не
+    // одразу при завантаженні — інакше переворот минав, поки погляд ще на заголовку.
+    // Щоразу, як перший екран знову видно, запис іде з початку.
+    var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var userPaused = false, heroReady = false;
+    function startHero() {
+      if (still || userPaused) return;
+      video.currentTime = 0;
+      var p = video.play();
+      if (p && p.catch) p.catch(function () {});
+    }
+    setTimeout(function () { heroReady = true; startHero(); },
+      document.documentElement.classList.contains('anim') ? 900 : 0);
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (!heroReady) return;
+          if (e.intersectionRatio >= 0.5 && video.paused) startHero();
+          else if (!e.isIntersecting) video.pause();
+        });
+      }, { threshold: [0, 0.5] }).observe(video);
     }
     toggle.addEventListener('click', function () {
+      userPaused = !video.paused;
       if (video.paused) video.play(); else video.pause();
     });
     video.addEventListener('play', function () { toggle.setAttribute('aria-pressed', 'false'); });
