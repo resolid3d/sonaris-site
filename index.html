@@ -7,7 +7,7 @@
 <meta name="color-scheme" content="light dark">
 <meta property="og:title" content="Sonaris — Audiobooks">
 <meta property="og:description" content="Audiobooks from your phone — no accounts, no ads.">
-<meta property="og:image" content="media/trailer.webp">
+<meta property="og:image" content="media/trailer-en.webp">
 <title>Sonaris — Audiobooks</title>
 <link rel="icon" href="icon.png" sizes="192x192">
 <link rel="apple-touch-icon" href="icon.png">
@@ -592,8 +592,10 @@
         <h2><span lang="uk">Sonaris за хвилину</span><span lang="en">Sonaris in a minute</span></h2>
       </div>
       <div class="trailer-frame glow" id="trailer-frame">
-        <video id="trailer-video" src="media/trailer.mp4" poster="media/trailer.webp" controls playsinline preload="metadata"
+        <video id="trailer-video" src="media/trailer-uk.mp4" poster="media/trailer-uk.webp" controls playsinline preload="metadata"
                width="720" height="1280"
+               data-src-uk="media/trailer-uk.mp4" data-src-en="media/trailer-en.mp4"
+               data-poster-uk="media/trailer-uk.webp" data-poster-en="media/trailer-en.webp"
                data-alt-uk="Відеоогляд Sonaris" data-alt-en="Sonaris video tour"></video>
         <button type="button" class="trailer-hint" id="trailer-hint">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></svg>
@@ -621,6 +623,14 @@
         var text = el.getAttribute('data-alt-' + lang);
         if (el.tagName === 'IMG') el.alt = text; else el.setAttribute('aria-label', text);
       });
+      // Трейлер своєю мовою: написи й озвучка в кожної версії свої.
+      var tv = document.getElementById('trailer-video');
+      var src = tv.getAttribute('data-src-' + lang);
+      if (tv.getAttribute('src') !== src) {
+        tv.pause();
+        tv.setAttribute('poster', tv.getAttribute('data-poster-' + lang));
+        tv.setAttribute('src', src);
+      }
     }
     show(document.documentElement.lang === 'en' ? 'en' : 'uk');
     buttons.forEach(function (b) {
