@@ -980,9 +980,10 @@
       new IntersectionObserver(function (entries) {
         entries.forEach(function (e) {
           clearInterval(timer);
-          if (e.isIntersecting) timer = setInterval(step, 1900);
+          // Перший крок — одразу, без паузи на цілий інтервал.
+          if (e.intersectionRatio >= 0.2) { step(); timer = setInterval(step, 1900); }
         });
-      }, { threshold: 0.4 }).observe(frame);
+      }, { threshold: 0.2 }).observe(frame);
     })();
 
     // Трейлер: при наведенні грає без звуку й зупиняється, коли курсор іде.
