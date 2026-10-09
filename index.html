@@ -183,7 +183,7 @@
   .wgrid { position: relative; aspect-ratio: 872 / 614; container-type: inline-size; }
   .wframe {
     position: absolute; left: 0; top: 0; width: 30.5%; height: 29.48%; border-radius: 5.2cqw;
-    transition: width .75s cubic-bezier(.3,.1,.2,1), height .75s cubic-bezier(.3,.1,.2,1);
+    transition: width .55s cubic-bezier(.3,.1,.2,1), height .55s cubic-bezier(.3,.1,.2,1);
   }
   .wframe[data-size="small"]  { width: 30.5%;  height: 29.48%; }
   .wframe[data-size="square"] { width: 30.5%;  height: 64.66%; }
@@ -191,7 +191,7 @@
   .wframe[data-size="large"]  { width: 65.25%; height: 100%; }
   .wframe[data-size="strip"]  { width: 100%;   height: 29.48%; }
   .wclip { position: absolute; inset: 0; border-radius: inherit; overflow: hidden; box-shadow: 0 18px 40px -14px rgba(0,0,0,.55); background: #000; }
-  .wclip img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: left top; opacity: 0; transition: opacity .45s ease; }
+  .wclip img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: left top; opacity: 0; transition: opacity .35s ease; }
   /* Новий вигляд проявляється ПОВЕРХ старого, а старий прибирається вже потім —
      інакше посередині переходу обидва напівпрозорі й просвічує чорне тло. */
   .wclip img.on { opacity: 1; z-index: 1; }
@@ -505,89 +505,6 @@
 
       <section class="row">
         <div class="row-text">
-          <span class="eyebrow"><span lang="uk">Глави</span><span lang="en">Chapters</span></span>
-          <h2><span lang="uk">Глави M4B — прямо з файлу</span><span lang="en">M4B chapters, straight from the file</span></h2>
-          <p>
-            <span lang="uk">Торкніться обкладинки — вона перевернеться, а під нею список глав і опис книги. Поточна глава підсвічена, до будь-якої — один дотик.</span>
-            <span lang="en">Tap the cover and it flips over to show the chapter list and the book’s description. The current chapter is highlighted; any other is one tap away.</span>
-          </p>
-        </div>
-        <div class="shots glow" style="--tint:#1E88E5">
-          <div class="phone"><img src="media/chapters.webp" width="540" height="1101" loading="lazy"
-               data-alt-uk="Список глав «Принцеси Марса» на звороті обкладинки"
-               data-alt-en="Chapter list of A Princess of Mars on the back of the cover" alt="">
-            <div class="badge b-left" style="--b-bg:#0D3A63;--b-fg:#D6E8FF;bottom:24%" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/></svg><span data-counter="int" data-to="29">29</span><small><span lang="uk">глав</span><span lang="en">chapters</span></small></div>
-          </div>
-        </div>
-      </section>
-
-      <section class="row flip">
-        <div class="row-text">
-          <span class="eyebrow"><span lang="uk">Таймер сну</span><span lang="en">Sleep timer</span></span>
-          <h2><span lang="uk">Засинайте під книгу — місце не загубиться</span><span lang="en">Fall asleep to a book without losing your place</span></h2>
-          <p>
-            <span lang="uk">Таймер плавно стишує звук, а наступного разу плеєр відмотає назад те, що ви могли проспати. Кожне прослуховування лишається в історії — з часом, главами й позначкою місяця, якщо спрацював таймер.</span>
-            <span lang="en">The timer fades the sound out, and next time you press play it rewinds what you might have slept through. Every session stays in the history — with times, chapters and a moon when the timer stopped it.</span>
-          </p>
-        </div>
-        <div class="shots glow" style="--tint:#8E24AA">
-          <div class="phone"><img src="media/history.webp" width="540" height="1101" loading="lazy"
-               data-alt-uk="Історія прослуховування «Дракули» по днях"
-               data-alt-en="Day-by-day listening history for Dracula" alt="">
-            <div class="badge b-right" style="--b-bg:#674FA5;--b-fg:#F3EDF9;top:26%" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg><span data-counter="clock" data-from="1789" data-dur="2200">00:00</span></div>
-          </div>
-        </div>
-      </section>
-
-      <section class="row">
-        <div class="row-text">
-          <span class="eyebrow"><span lang="uk">Відкат після паузи</span><span lang="en">Rewind after pause</span></span>
-          <h2><span lang="uk">Що довша пауза — то далі назад</span><span lang="en">The longer the pause, the further back</span></h2>
-          <p>
-            <span lang="uk">Повернулись до книги — і кілька секунд прокручуються назад, щоб згадати, на чому зупинились. Після короткої паузи ледь-ледь, наступного дня — помітніше. Пороги й секунди налаштовуються.</span><span lang="en">Come back to a book and it steps back a few seconds so you can pick up the thread. Barely after a short pause, more the next day. Thresholds and seconds are adjustable.</span>
-          </p>
-        </div>
-        <div class="rewind glow" style="--tint:#4F378B" aria-hidden="true">
-          <div class="rw" style="--back:7%;--delay:0ms">
-            <div class="rw-top"><span><span lang="uk">Пауза кілька хвилин</span><span lang="en">A few minutes’ pause</span></span><b>−<span data-counter="int" data-to="5" data-delay="1500" data-dur="500">5</span><span lang="uk">&nbsp;с</span><span lang="en">&nbsp;s</span></b></div>
-            <div class="track"><div class="fill"><i class="head"></i></div></div>
-          </div>
-          <div class="rw" style="--back:18%;--delay:350ms">
-            <div class="rw-top"><span><span lang="uk">Пауза понад годину</span><span lang="en">Over an hour</span></span><b>−<span data-counter="int" data-to="15" data-delay="1850" data-dur="500">15</span><span lang="uk">&nbsp;с</span><span lang="en">&nbsp;s</span></b></div>
-            <div class="track"><div class="fill"><i class="head"></i></div></div>
-          </div>
-          <div class="rw" style="--back:34%;--delay:700ms">
-            <div class="rw-top"><span><span lang="uk">Наступного дня</span><span lang="en">The next day</span></span><b>−<span data-counter="int" data-to="30" data-delay="2200" data-dur="500">30</span><span lang="uk">&nbsp;с</span><span lang="en">&nbsp;s</span></b></div>
-            <div class="track"><div class="fill"><i class="head"></i></div></div>
-          </div>
-        </div>
-      </section>
-
-      <section class="row flip">
-        <div class="row-text">
-          <span class="eyebrow"><span lang="uk">Статистика</span><span lang="en">Statistics</span></span>
-          <h2><span lang="uk">Скільки слухаєте — і за скільки дочитали</span><span lang="en">How much you listen — and how long each book took</span></h2>
-          <p>
-            <span lang="uk">Час за день, тиждень, місяць і рік, серія днів поспіль і графік. А в прослуханих книгах видно, за скільки днів ви кожну подужали.</span>
-            <span lang="en">Time per day, week, month and year, your streak and a chart. And finished books show how many days each one took.</span>
-          </p>
-        </div>
-        <div class="shots pair glow" style="--tint:#5E35B1">
-          <div class="phone"><img src="media/stats.webp" width="540" height="1101" loading="lazy"
-               data-alt-uk="Статистика: усього 41 год 34 хв, серія 15 днів, графік по днях"
-               data-alt-en="Statistics: 41 h 34 min total, a 15-day streak and a daily chart" alt="">
-            <div class="badge b-left" style="--b-bg:#D0BAFF;--b-fg:#21182F;top:14%" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="14" width="4.5" height="6" rx="1.5"/><rect x="16.5" y="14" width="4.5" height="6" rx="1.5"/></svg><span data-counter="duration" data-to="2494" data-dur="1600">41 h 34 min</span></div>
-          </div>
-          <div class="phone"><img src="media/finished.webp" width="540" height="1101" loading="lazy"
-               data-alt-uk="Прослухані книги з позначкою «Прослухано за 37 днів»"
-               data-alt-en="Finished books, each marked “Listened in N days”" alt="">
-            <div class="badge b-right" style="--b-bg:#4F378B;--b-fg:#EADDFF;bottom:16%" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17M9 15l2 2 4-4"/></svg><span data-counter="int" data-to="15" data-delay="1300">15</span><small><span lang="uk">днів поспіль</span><span lang="en">day streak</span></small></div>
-          </div>
-        </div>
-      </section>
-
-      <section class="row">
-        <div class="row-text">
           <span class="eyebrow"><span lang="uk">Віджет</span><span lang="en">Widget</span></span>
           <h2><span lang="uk">Книга — просто на головному екрані</span><span lang="en">Your book, right on the home screen</span></h2>
           <p>
@@ -628,6 +545,89 @@
           </p>
         </div>
       </section>
+      <section class="row flip">
+        <div class="row-text">
+          <span class="eyebrow"><span lang="uk">Глави</span><span lang="en">Chapters</span></span>
+          <h2><span lang="uk">Глави M4B — прямо з файлу</span><span lang="en">M4B chapters, straight from the file</span></h2>
+          <p>
+            <span lang="uk">Торкніться обкладинки — вона перевернеться, а під нею список глав і опис книги. Поточна глава підсвічена, до будь-якої — один дотик.</span>
+            <span lang="en">Tap the cover and it flips over to show the chapter list and the book’s description. The current chapter is highlighted; any other is one tap away.</span>
+          </p>
+        </div>
+        <div class="shots glow" style="--tint:#1E88E5">
+          <div class="phone"><img src="media/chapters.webp" width="540" height="1101" loading="lazy"
+               data-alt-uk="Список глав «Принцеси Марса» на звороті обкладинки"
+               data-alt-en="Chapter list of A Princess of Mars on the back of the cover" alt="">
+            <div class="badge b-right" style="--b-bg:#0D3A63;--b-fg:#D6E8FF;bottom:24%" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/></svg><span data-counter="int" data-to="29">29</span><small><span lang="uk">глав</span><span lang="en">chapters</span></small></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="row">
+        <div class="row-text">
+          <span class="eyebrow"><span lang="uk">Таймер сну</span><span lang="en">Sleep timer</span></span>
+          <h2><span lang="uk">Засинайте під книгу — місце не загубиться</span><span lang="en">Fall asleep to a book without losing your place</span></h2>
+          <p>
+            <span lang="uk">Таймер плавно стишує звук, а наступного разу плеєр відмотає назад те, що ви могли проспати. Кожне прослуховування лишається в історії — з часом, главами й позначкою місяця, якщо спрацював таймер.</span>
+            <span lang="en">The timer fades the sound out, and next time you press play it rewinds what you might have slept through. Every session stays in the history — with times, chapters and a moon when the timer stopped it.</span>
+          </p>
+        </div>
+        <div class="shots glow" style="--tint:#8E24AA">
+          <div class="phone"><img src="media/history.webp" width="540" height="1101" loading="lazy"
+               data-alt-uk="Історія прослуховування «Дракули» по днях"
+               data-alt-en="Day-by-day listening history for Dracula" alt="">
+            <div class="badge b-left" style="--b-bg:#674FA5;--b-fg:#F3EDF9;top:26%" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg><span data-counter="clock" data-from="1789" data-dur="2200">00:00</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="row flip">
+        <div class="row-text">
+          <span class="eyebrow"><span lang="uk">Відкат після паузи</span><span lang="en">Rewind after pause</span></span>
+          <h2><span lang="uk">Що довша пауза — то далі назад</span><span lang="en">The longer the pause, the further back</span></h2>
+          <p>
+            <span lang="uk">Повернулись до книги — і кілька секунд прокручуються назад, щоб згадати, на чому зупинились. Після короткої паузи ледь-ледь, наступного дня — помітніше. Пороги й секунди налаштовуються.</span><span lang="en">Come back to a book and it steps back a few seconds so you can pick up the thread. Barely after a short pause, more the next day. Thresholds and seconds are adjustable.</span>
+          </p>
+        </div>
+        <div class="rewind glow" style="--tint:#4F378B" aria-hidden="true">
+          <div class="rw" style="--back:7%;--delay:0ms">
+            <div class="rw-top"><span><span lang="uk">Пауза кілька хвилин</span><span lang="en">A few minutes’ pause</span></span><b>−<span data-counter="int" data-to="5" data-delay="1500" data-dur="500">5</span><span lang="uk">&nbsp;с</span><span lang="en">&nbsp;s</span></b></div>
+            <div class="track"><div class="fill"><i class="head"></i></div></div>
+          </div>
+          <div class="rw" style="--back:18%;--delay:350ms">
+            <div class="rw-top"><span><span lang="uk">Пауза понад годину</span><span lang="en">Over an hour</span></span><b>−<span data-counter="int" data-to="15" data-delay="1850" data-dur="500">15</span><span lang="uk">&nbsp;с</span><span lang="en">&nbsp;s</span></b></div>
+            <div class="track"><div class="fill"><i class="head"></i></div></div>
+          </div>
+          <div class="rw" style="--back:34%;--delay:700ms">
+            <div class="rw-top"><span><span lang="uk">Наступного дня</span><span lang="en">The next day</span></span><b>−<span data-counter="int" data-to="30" data-delay="2200" data-dur="500">30</span><span lang="uk">&nbsp;с</span><span lang="en">&nbsp;s</span></b></div>
+            <div class="track"><div class="fill"><i class="head"></i></div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="row">
+        <div class="row-text">
+          <span class="eyebrow"><span lang="uk">Статистика</span><span lang="en">Statistics</span></span>
+          <h2><span lang="uk">Скільки слухаєте — і за скільки дочитали</span><span lang="en">How much you listen — and how long each book took</span></h2>
+          <p>
+            <span lang="uk">Час за день, тиждень, місяць і рік, серія днів поспіль і графік. А в прослуханих книгах видно, за скільки днів ви кожну подужали.</span>
+            <span lang="en">Time per day, week, month and year, your streak and a chart. And finished books show how many days each one took.</span>
+          </p>
+        </div>
+        <div class="shots pair glow" style="--tint:#5E35B1">
+          <div class="phone"><img src="media/stats.webp" width="540" height="1101" loading="lazy"
+               data-alt-uk="Статистика: усього 41 год 34 хв, серія 15 днів, графік по днях"
+               data-alt-en="Statistics: 41 h 34 min total, a 15-day streak and a daily chart" alt="">
+            <div class="badge b-left" style="--b-bg:#D0BAFF;--b-fg:#21182F;top:14%" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="14" width="4.5" height="6" rx="1.5"/><rect x="16.5" y="14" width="4.5" height="6" rx="1.5"/></svg><span data-counter="duration" data-to="2494" data-dur="1600">41 h 34 min</span></div>
+          </div>
+          <div class="phone"><img src="media/finished.webp" width="540" height="1101" loading="lazy"
+               data-alt-uk="Прослухані книги з позначкою «Прослухано за 37 днів»"
+               data-alt-en="Finished books, each marked “Listened in N days”" alt="">
+            <div class="badge b-left" style="--b-bg:#4F378B;--b-fg:#EADDFF;bottom:16%" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17M9 15l2 2 4-4"/></svg><span data-counter="int" data-to="15" data-delay="1300">15</span><small><span lang="uk">днів поспіль</span><span lang="en">day streak</span></small></div>
+          </div>
+        </div>
+      </section>
+
     </div>
 
     <section class="more">
@@ -957,7 +957,7 @@
           im.classList.toggle('on', on);
         });
         clearTimeout(paint.t);
-        paint.t = setTimeout(function () { imgs.forEach(function (im) { im.classList.remove('prev'); }); }, 750);
+        paint.t = setTimeout(function () { imgs.forEach(function (im) { im.classList.remove('prev'); }); }, 600);
         caps.forEach(function (c) { c.hidden = c.dataset.k !== size; });
         btns.forEach(function (bt) { bt.setAttribute('aria-pressed', String(+bt.dataset.w === book)); });
       }
@@ -968,8 +968,8 @@
           if (i === 0 && !touched) book = 1 - book;
           size = ORDER[i];
           paint();
-        }, 300);
-        setTimeout(function () { frame.classList.remove('resizing'); }, 1300);
+        }, 200);
+        setTimeout(function () { frame.classList.remove('resizing'); }, 950);
       }
       btns.forEach(function (bt) {
         bt.addEventListener('click', function () { touched = true; book = +bt.dataset.w; paint(); });
@@ -980,7 +980,7 @@
       new IntersectionObserver(function (entries) {
         entries.forEach(function (e) {
           clearInterval(timer);
-          if (e.isIntersecting) timer = setInterval(step, 2600);
+          if (e.isIntersecting) timer = setInterval(step, 1900);
         });
       }, { threshold: 0.4 }).observe(frame);
     })();
