@@ -163,6 +163,49 @@
   .shots.pair .phone { width: min(230px, 46vw); }
   .shots.pair .phone + .phone { margin-left: -14%; margin-top: 18%; }
 
+  /* ---------- Віджет ----------
+     Набір розмірів одного віджета, розставлений як на головному екрані. Координати —
+     частки від рамки набору (вирізано зі скріна 981 px, рамка 872×1264). */
+  .wbox { display: grid; gap: 18px; justify-items: center; }
+  .wbooks { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+  .wbooks button {
+    display: inline-flex; align-items: center; gap: 8px; font: inherit; font-size: 14px; font-weight: 700;
+    padding: 7px 14px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--text); cursor: pointer;
+  }
+  .wbooks button i { width: 10px; height: 10px; border-radius: 50%; background: var(--dot); }
+  .wbooks button[aria-pressed="true"] { background: var(--accent-soft); color: var(--on-accent-soft); border-color: transparent; }
+  /* Сцена «головного екрана»: рамка віджета тягнеться за правий нижній кут через усі
+     розміри. Розміри — частки від найбільшого (872×614 у пікселях скріна 981 px). */
+  .wstage {
+    position: relative; width: min(470px, 100%); padding: 5%; border-radius: 28px;
+    background: radial-gradient(circle, color-mix(in srgb, var(--muted) 22%, transparent) 1.2px, transparent 1.6px) 0 0 / 22px 22px, var(--surface);
+  }
+  .wgrid { position: relative; aspect-ratio: 872 / 614; container-type: inline-size; }
+  .wframe {
+    position: absolute; left: 0; top: 0; width: 30.5%; height: 29.48%; border-radius: 5.2cqw;
+    transition: width .75s cubic-bezier(.3,.1,.2,1), height .75s cubic-bezier(.3,.1,.2,1);
+  }
+  .wframe[data-size="small"]  { width: 30.5%;  height: 29.48%; }
+  .wframe[data-size="square"] { width: 30.5%;  height: 64.66%; }
+  .wframe[data-size="medium"] { width: 65.25%; height: 64.66%; }
+  .wframe[data-size="large"]  { width: 65.25%; height: 100%; }
+  .wframe[data-size="strip"]  { width: 100%;   height: 29.48%; }
+  .wclip { position: absolute; inset: 0; border-radius: inherit; overflow: hidden; box-shadow: 0 18px 40px -14px rgba(0,0,0,.55); background: #000; }
+  .wclip img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: left top; opacity: 0; transition: opacity .45s ease; }
+  /* Новий вигляд проявляється ПОВЕРХ старого, а старий прибирається вже потім —
+     інакше посередині переходу обидва напівпрозорі й просвічує чорне тло. */
+  .wclip img.on { opacity: 1; z-index: 1; }
+  .wclip img.prev { opacity: 1; transition: none; }
+  /* Контур і ручки, як у режимі зміни розміру на телефоні. */
+  .wframe::before { content: ""; position: absolute; inset: -6px; border: 2px solid var(--accent); border-radius: calc(5.2cqw + 6px); opacity: 0; transition: opacity .25s; pointer-events: none; }
+  .wframe i { position: absolute; width: 12px; height: 12px; margin: -6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 3px var(--surface); opacity: 0; transition: opacity .25s; }
+  .wframe i:nth-of-type(1) { right: -6px; top: 50%; }
+  .wframe i:nth-of-type(2) { left: 50%; bottom: -6px; }
+  .wframe i:nth-of-type(3) { right: -6px; bottom: -6px; }
+  .wframe.resizing::before, .wframe.resizing i { opacity: 1; }
+  .wcap { min-height: 2.8em; text-align: center; color: var(--muted); font-size: 15px; font-weight: 600; }
+  .wcap b { color: var(--text); }
+
   /* ---------- Дрібніші функції ----------
      Щільна сітка: широкі картки з міні-візуалом чергуються з вузькими, щоб
      секція на весь екран не виглядала порожньою. */
@@ -542,6 +585,49 @@
           </div>
         </div>
       </section>
+
+      <section class="row">
+        <div class="row-text">
+          <span class="eyebrow"><span lang="uk">Віджет</span><span lang="en">Widget</span></span>
+          <h2><span lang="uk">Книга — просто на головному екрані</span><span lang="en">Your book, right on the home screen</span></h2>
+          <p>
+            <span lang="uk">Один віджет — різні розміри: найменший показує кнопку з кільцем прогресу, широкий — ще й назву, високий — главу, час і кнопки. Кольори він бере з обкладинки, а кнопки нижнього ряду налаштовуються: глави, перемотка, закладка чи залишок часу голосом.</span><span lang="en">One widget, many sizes: the smallest is a button with a progress ring, a wide one adds the title, a tall one the chapter, times and buttons. It takes its colours from the cover, and the bottom-row buttons are yours to set: chapters, skips, a bookmark or the time left read aloud.</span>
+          </p>
+        </div>
+        <div class="wbox">
+          <div class="wbooks" role="group" aria-label="Книга / Book">
+            <button type="button" data-w="0" aria-pressed="true" style="--dot:#E53935"><i></i><span lang="uk">Собака Баскервілів</span><span lang="en">The Hound of the Baskervilles</span></button>
+            <button type="button" data-w="1" aria-pressed="false" style="--dot:#C9A227"><i></i><span lang="uk">Талісман</span><span lang="en">The Talisman</span></button>
+          </div>
+          <div class="wstage">
+            <div class="wgrid">
+              <div class="wframe" id="wframe" data-size="large" role="img"
+                   data-alt-uk="Віджет Sonaris змінює вигляд залежно від розміру" data-alt-en="The Sonaris widget changes its layout with its size">
+                <div class="wclip">
+              <img src="media/widget-small-hound.webp" alt="" data-k="small" data-b="hound" loading="lazy">
+              <img src="media/widget-small-talisman.webp" alt="" data-k="small" data-b="talisman" loading="lazy">
+              <img src="media/widget-square-hound.webp" alt="" data-k="square" data-b="hound" loading="lazy">
+              <img src="media/widget-square-talisman.webp" alt="" data-k="square" data-b="talisman" loading="lazy">
+              <img src="media/widget-medium-hound.webp" alt="" data-k="medium" data-b="hound" loading="lazy">
+              <img src="media/widget-medium-talisman.webp" alt="" data-k="medium" data-b="talisman" loading="lazy">
+              <img src="media/widget-large-hound.webp" alt="" data-k="large" data-b="hound" loading="lazy">
+              <img src="media/widget-large-talisman.webp" alt="" data-k="large" data-b="talisman" loading="lazy">
+              <img src="media/widget-strip-hound.webp" alt="" data-k="strip" data-b="hound" loading="lazy">
+              <img src="media/widget-strip-talisman.webp" alt="" data-k="strip" data-b="talisman" loading="lazy">
+                </div>
+                <i></i><i></i><i></i>
+              </div>
+            </div>
+          </div>
+          <p class="wcap" id="wcap" aria-live="polite">
+            <span data-k="small" hidden><b><span lang="uk">Найменший</span><span lang="en">Smallest</span></b> — <span lang="uk">кнопка й кільце прогресу</span><span lang="en">a button and a progress ring</span></span>
+            <span data-k="square" hidden><b><span lang="uk">Квадратний</span><span lang="en">Square</span></b> — <span lang="uk">обкладинка з кільцем прогресу</span><span lang="en">the cover with a progress ring</span></span>
+            <span data-k="medium" hidden><b><span lang="uk">Середній</span><span lang="en">Medium</span></b> — <span lang="uk">глава, час і кнопки</span><span lang="en">chapter, times and buttons</span></span>
+            <span data-k="large" hidden><b><span lang="uk">Великий</span><span lang="en">Large</span></b> — <span lang="uk">усе разом</span><span lang="en">everything at once</span></span>
+            <span data-k="strip" hidden><b><span lang="uk">Смужка</span><span lang="en">Strip</span></b> — <span lang="uk">назва, залишок і кнопка</span><span lang="en">title, time left and a button</span></span>
+          </p>
+        </div>
+      </section>
     </div>
 
     <section class="more">
@@ -568,9 +654,9 @@
           <span><span lang="uk">Один, два, три натиски чи утримання — кожному своя дія.</span><span lang="en">One, two, three presses or a hold — each with its own action.</span></span>
         </div>
         <div class="feature">
-          <span class="f-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2"/><rect x="3.5" y="13.5" width="17" height="7" rx="2"/></svg></span>
-          <strong><span lang="uk">Віджет і сповіщення</span><span lang="en">Widget and notification</span></strong>
-          <span><span lang="uk">Пауза, перемотка й обкладинка — з головного екрана.</span><span lang="en">Pause, skip and the cover — right on the home screen.</span></span>
+          <span class="f-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path stroke-linecap="round" d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15zM10 20.5a2 2 0 0 0 4 0"/></svg></span>
+          <strong><span lang="uk">Сповіщення й екран блокування</span><span lang="en">Notification and lock screen</span></strong>
+          <span><span lang="uk">Пауза, перемотка й обкладинка — у шторці сповіщень і на екрані блокування.</span><span lang="en">Pause, skip and the cover — in the notification shade and on the lock screen.</span></span>
         </div>
         <div class="feature wide private">
           <div class="f-text">
@@ -756,7 +842,7 @@
     // зникання й поява під пальцем виглядали як стрибки вмісту.
     var replay = window.matchMedia('(min-width: 820px) and (min-height: 620px)');
     if (animated) {
-      var targets = document.querySelectorAll('.row-text, .shots, .rewind, .more > h2, .features, .trailer .row-text, .trailer-frame');
+      var targets = document.querySelectorAll('.row-text, .shots, .rewind, .wbox, .more > h2, .features, .trailer .row-text, .trailer-frame');
       var seen = new IntersectionObserver(function (entries) {
         entries.forEach(function (e) {
           var el = e.target, isIn = el.classList.contains('in');
@@ -851,6 +937,53 @@
       e.preventDefault();
       if (!locked) go(dir);
     });
+
+    // Віджет: рамка тягнеться через усі розміри (найменший → … → смужка), вміст
+    // перемикається на вигляд для нового розміру. Після кожного кола — інша книга,
+    // поки ніхто не натискав перемикач. Хто просить менше руху — бачить великий, нерухомо.
+    (function () {
+      var frame = document.getElementById('wframe');
+      var caps = document.querySelectorAll('#wcap [data-k]');
+      var imgs = frame.querySelectorAll('img');
+      var btns = document.querySelectorAll('.wbooks button');
+      var ORDER = ['small', 'square', 'medium', 'large', 'strip'];
+      var size = 'large', book = 0, touched = false, timer = null;
+      function paint() {
+        frame.dataset.size = size;
+        var b = book ? 'talisman' : 'hound';
+        imgs.forEach(function (im) {
+          var on = im.dataset.k === size && im.dataset.b === b;
+          im.classList.toggle('prev', !on && im.classList.contains('on'));
+          im.classList.toggle('on', on);
+        });
+        clearTimeout(paint.t);
+        paint.t = setTimeout(function () { imgs.forEach(function (im) { im.classList.remove('prev'); }); }, 750);
+        caps.forEach(function (c) { c.hidden = c.dataset.k !== size; });
+        btns.forEach(function (bt) { bt.setAttribute('aria-pressed', String(+bt.dataset.w === book)); });
+      }
+      function step() {
+        frame.classList.add('resizing');
+        setTimeout(function () {
+          var i = (ORDER.indexOf(size) + 1) % ORDER.length;
+          if (i === 0 && !touched) book = 1 - book;
+          size = ORDER[i];
+          paint();
+        }, 300);
+        setTimeout(function () { frame.classList.remove('resizing'); }, 1300);
+      }
+      btns.forEach(function (bt) {
+        bt.addEventListener('click', function () { touched = true; book = +bt.dataset.w; paint(); });
+      });
+      paint();
+      if (!animated) return;
+      size = 'small'; paint();   // з анімацією коло починається з найменшого
+      new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          clearInterval(timer);
+          if (e.isIntersecting) timer = setInterval(step, 2600);
+        });
+      }, { threshold: 0.4 }).observe(frame);
+    })();
 
     // Трейлер: при наведенні грає без звуку й зупиняється, коли курсор іде.
     // На сенсорних екранах те саме робить прокручування: грає, поки відео на екрані.
