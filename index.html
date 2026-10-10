@@ -206,11 +206,58 @@
   .wcap { min-height: 2.8em; text-align: center; color: var(--muted); font-size: 15px; font-weight: 600; }
   .wcap b { color: var(--text); }
 
+  /* ---------- Архіви ----------
+     Дві міні-демонстрації, як у застосунку: стан задає data-s, переходи — CSS. */
+  .arch { display: grid; gap: 16px; width: min(440px, 100%); justify-self: center; }
+  .acard { background: var(--surface); border-radius: 24px; padding: 18px; display: grid; gap: 12px; box-shadow: var(--shadow); }
+  .acap { font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .abanner { display: grid; padding: 10px 12px; border-radius: 14px; min-height: 48px; align-items: center;
+    background: var(--accent-soft); color: var(--on-accent-soft); font-size: 14px; font-weight: 700; }
+  .abanner > span { grid-area: 1 / 1; display: flex; align-items: center; justify-content: space-between; gap: 10px; transition: opacity .35s, transform .35s; }
+  .abanner .bn-b { opacity: 0; transform: translateY(6px); justify-content: flex-start; }
+  .zip[data-s="done"] .bn-a { opacity: 0; transform: translateY(-6px); }
+  .zip[data-s="done"] .bn-b { opacity: 1; transform: none; }
+  .abanner b { padding: 6px 12px; border-radius: 999px; background: var(--accent); color: var(--bg); font-size: 13px; transition: transform .15s; }
+  .arow { position: relative; display: grid; grid-template-columns: 52px 1fr; gap: 12px; align-items: center; min-height: 52px; }
+  .aic { position: relative; width: 52px; height: 52px; }
+  .aic > * { position: absolute; inset: 0; transition: opacity .35s, transform .45s cubic-bezier(.2,.9,.3,1.3), filter .45s; }
+  .aic svg { padding: 10px; border-radius: 14px; background: var(--line); color: var(--muted); }
+  .aic img { width: 52px; height: 52px; border-radius: 12px; object-fit: cover; }
+  .atx { position: relative; height: 52px; min-width: 0; }
+  .atx > div { position: absolute; inset: 0; display: grid; align-content: center; gap: 2px; transition: opacity .35s, transform .35s; }
+  .atx strong { font-size: 16px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .atx span { font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .abar { height: 6px; border-radius: 999px; background: var(--line); overflow: hidden; }
+  .abar i { display: block; height: 100%; width: 0; border-radius: inherit; background: var(--accent); }
+  .achips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .achips > span { font-size: 12px; font-weight: 700; padding: 5px 10px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); transition: background-color .35s, color .35s, border-color .35s; }
+  .achips > span.on { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+
+  /* ZIP: idle → unzip (смуга) → done (книга) */
+  .zip .aic img, .zip .atx .b { opacity: 0; }
+  .zip .aic img { transform: scale(.5); }
+  .zip .atx .b { transform: translateY(8px); }
+  .zip[data-s="unzip"] .abanner b { transform: scale(.92); }
+  .zip[data-s="done"] .aic svg { opacity: 0; transform: scale(.6); }
+  .zip[data-s="done"] .aic img { opacity: 1; transform: none; }
+  .zip[data-s="done"] .atx .a { opacity: 0; transform: translateY(-8px); }
+  .zip[data-s="done"] .atx .b { opacity: 1; transform: none; }
+  .zip .abar { transition: opacity .3s; opacity: 0; }
+  .zip[data-s="unzip"] .abar { opacity: 1; }
+
+  /* Книга без файлів: here → gone (сіра, «Закинуті») → back */
+  .keep .abar i { width: 51%; background: #E53935; transition: background-color .45s; }
+  .keep .atx .b { opacity: 0; }
+  .keep[data-s="gone"] .aic img { filter: grayscale(1) brightness(.7); }
+  .keep[data-s="gone"] .atx .a { opacity: 0; }
+  .keep[data-s="gone"] .atx .b { opacity: 1; }
+  .keep[data-s="gone"] .abar i { background: var(--muted); }
+
   /* ---------- Дрібніші функції ----------
      Щільна сітка: широкі картки з міні-візуалом чергуються з вузькими, щоб
      секція на весь екран не виглядала порожньою. */
-  .more { display: grid; gap: 24px; }
-  .features { display: grid; grid-template-columns: 1fr; gap: 14px; }
+  .more { display: grid; gap: 18px; }
+  .features { display: grid; grid-template-columns: 1fr; gap: 12px; }
   .feature {
     background: var(--surface); border-radius: 24px; padding: 22px 24px;
     display: grid; gap: 6px; align-content: start;
@@ -224,6 +271,14 @@
   }
   .f-icon svg { width: 22px; height: 22px; }
   .feature.wide { gap: 20px; }
+  /* Малі картки — значок ліворуч від тексту: так шість карток і решта «І ще»
+     вміщаються в один екран, а не розтягують секцію вище за нього. */
+  .feature:not(.wide) { grid-template-columns: 44px 1fr; column-gap: 14px; row-gap: 2px; padding: 18px 20px; }
+  .feature:not(.wide) .f-icon { grid-row: span 2; margin-bottom: 0; }
+  .feature:not(.wide) strong { align-self: end; font-size: 17px; }
+  .private .f-text { grid-template-columns: 44px 1fr; column-gap: 14px; row-gap: 2px; }
+  .private .f-icon { grid-row: span 2; margin-bottom: 0; }
+  .private .f-text strong { align-self: end; }
   .f-visual { display: grid; gap: 18px; align-content: center; }
   .speeds { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 0; list-style: none; }
   .speeds li {
@@ -232,7 +287,7 @@
   }
   .speeds li.on { background: var(--accent); border-color: var(--accent); color: var(--bg); }
   /* Еквалайзер — нерухомі повзунки (форма кривої), не «танцюючі» смужки. */
-  .eq { display: flex; gap: 34px; height: 90px; padding-inline: 9px; }
+  .eq { display: flex; gap: 34px; height: 64px; padding-inline: 9px; }
   .eq i { position: relative; flex: 1; max-width: 10px; border-radius: 999px; background: var(--line); }
   .eq i::before { content: ""; position: absolute; inset: auto 0 0; height: var(--h); border-radius: inherit; background: var(--accent); }
   .eq i::after {
@@ -342,6 +397,9 @@
   .anim .features.in .feature:nth-child(3) { animation-delay: .16s; }
   .anim .features.in .feature:nth-child(4) { animation-delay: .24s; }
   .anim .features.in .feature:nth-child(5) { animation-delay: .32s; }
+  .anim .features.in .feature:nth-child(6) { animation-delay: .4s; }
+  .anim .features.in .feature:nth-child(7) { animation-delay: .48s; }
+  .anim .features.in .feature:nth-child(8) { animation-delay: .56s; }
 
   /* Бейджі вискакують, коли телефон уже приїхав, і далі ледь погойдуються. */
   @keyframes pop { from { opacity: 0; scale: .5; } }
@@ -404,6 +462,7 @@
     header { padding-top: 32px; scroll-margin-top: 0; }
     .hero { min-height: calc(100svh - 72px); padding-bottom: 48px; }
     .row, .more, .trailer { min-height: 100svh; align-content: center; padding-block: 48px; scroll-margin-top: 0; }
+    .more { padding-block: 28px; }
     footer { padding-bottom: 32px; }
     .dots { display: flex; }
   }
@@ -628,6 +687,41 @@
         </div>
       </section>
 
+      <section class="row flip">
+        <div class="row-text">
+          <span class="eyebrow"><span lang="uk">Архіви</span><span lang="en">Archives</span></span>
+          <h2><span lang="uk">ZIP розпакує, прогрес збереже</span><span lang="en">Unzips books, keeps your progress</span></h2>
+          <p>
+            <span lang="uk">Книга прийшла архівом — Sonaris знайде ZIP у папці й розпакує в окрему теку, навіть із кириличними назвами. А якщо файлів не стало, книга не зникне: прослухана лишиться в «Завершених», розпочата — в «Закинутих», з прогресом і закладками. Повернете теку — повернеться й книга.</span><span lang="en">Got a book as a ZIP? Sonaris finds it in the folder and unpacks it into its own folder — Cyrillic names included. And if the files disappear, the book doesn’t: a finished one stays in Finished, a started one in Abandoned, with progress and bookmarks. Bring the folder back and the book returns.</span>
+          </p>
+        </div>
+        <div class="arch" aria-hidden="true">
+          <div class="acard zip" data-s="idle">
+            <div class="acap"><span lang="uk">ZIP-архів</span><span lang="en">ZIP archive</span></div>
+            <div class="abanner"><span class="bn-a"><span><span lang="uk">Знайдено 1 ZIP-архів</span><span lang="en">1 ZIP archive found</span></span><b><span lang="uk">Розпакувати</span><span lang="en">Unpack</span></b></span><span class="bn-b">✓&nbsp;<span lang="uk">Розпаковано 1 архів</span><span lang="en">1 archive unpacked</span></span></div>
+            <div class="arow">
+              <div class="aic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4" width="17" height="5" rx="1.5"/><path d="M5 9v9.5A1.5 1.5 0 0 0 6.5 20h11a1.5 1.5 0 0 0 1.5-1.5V9M10 13h4"/></svg><img src="media/cover-scarlet.webp" alt=""></div>
+              <div class="atx">
+                <div class="a"><strong>studyinscarlet_librivox.zip</strong><span class="zmeta">98 <span lang="uk">МБ</span><span lang="en">MB</span></span></div>
+                <div class="b"><strong>A Study in Scarlet</strong><span>Arthur Conan Doyle · 4 <span lang="uk">год</span><span lang="en">h</span> 13 <span lang="uk">хв</span><span lang="en">min</span></span></div>
+              </div>
+            </div>
+            <div class="abar"><i></i></div>
+          </div>
+          <div class="acard keep" data-s="here">
+            <div class="acap"><span lang="uk">Файлів не стало</span><span lang="en">Files gone</span></div>
+            <div class="achips"><span class="c-here on"><span lang="uk">Слухаю</span><span lang="en">Listening</span></span><span><span lang="uk">Завершені</span><span lang="en">Finished</span></span><span class="c-gone"><span lang="uk">Закинуті</span><span lang="en">Abandoned</span></span></div>
+            <div class="arow">
+              <div class="aic"><img src="media/cover-dracula.webp" alt=""></div>
+              <div class="atx">
+                <div class="a"><strong>Dracula</strong><span>Bram Stoker · 51%</span></div>
+                <div class="b"><strong>Dracula</strong><span><span lang="uk">Файлів немає · прогрес 51% збережено</span><span lang="en">Files gone · 51% progress kept</span></span></div>
+              </div>
+            </div>
+            <div class="abar"><i></i></div>
+          </div>
+        </div>
+      </section>
     </div>
 
     <section class="more">
@@ -646,7 +740,7 @@
         <div class="feature">
           <span class="f-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M6 3.5h12v17l-6-4-6 4z"/></svg></span>
           <strong><span lang="uk">Закладки з нотатками</span><span lang="en">Bookmarks with notes</span></strong>
-          <span><span lang="uk">Дотик — список закладок, довгий дотик — швидка закладка просто зараз.</span><span lang="en">Tap for the list, long-press to drop one right now.</span></span>
+          <span><span lang="uk">Дотик — список, довгий дотик — нова закладка просто зараз.</span><span lang="en">Tap for the list, long-press to drop one right now.</span></span>
         </div>
         <div class="feature">
           <span class="f-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="14" width="4.5" height="6" rx="1.5"/><rect x="16.5" y="14" width="4.5" height="6" rx="1.5"/></svg></span>
@@ -656,7 +750,7 @@
         <div class="feature">
           <span class="f-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path stroke-linecap="round" d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15zM10 20.5a2 2 0 0 0 4 0"/></svg></span>
           <strong><span lang="uk">Сповіщення й екран блокування</span><span lang="en">Notification and lock screen</span></strong>
-          <span><span lang="uk">Пауза, перемотка й обкладинка — у шторці сповіщень і на екрані блокування.</span><span lang="en">Pause, skip and the cover — in the notification shade and on the lock screen.</span></span>
+          <span><span lang="uk">Пауза, перемотка й обкладинка — у шторці й на екрані блокування.</span><span lang="en">Pause, skip and the cover — in the shade and on the lock screen.</span></span>
         </div>
         <div class="feature wide private">
           <div class="f-text">
@@ -842,7 +936,7 @@
     // зникання й поява під пальцем виглядали як стрибки вмісту.
     var replay = window.matchMedia('(min-width: 820px) and (min-height: 620px)');
     if (animated) {
-      var targets = document.querySelectorAll('.row-text, .shots, .rewind, .wbox, .more > h2, .features, .trailer .row-text, .trailer-frame');
+      var targets = document.querySelectorAll('.row-text, .shots, .rewind, .wbox, .arch, .more > h2, .features, .trailer .row-text, .trailer-frame');
       var seen = new IntersectionObserver(function (entries) {
         entries.forEach(function (e) {
           var el = e.target, isIn = el.classList.contains('in');
@@ -902,7 +996,23 @@
       return list;
     }
     function go(dir) {
-      var list = points(), y = window.scrollY, i = 0;
+      var list = points(), y = window.scrollY, i = 0, vh = window.innerHeight;
+      // Секція вища за екран (низький ноутбук): спершу показуємо її решту,
+      // а не перестрибуємо одразу до наступної — інакше низ секції не побачити.
+      var next = list.filter(function (p) { return p > y + 2; })[0];
+      var prev = list.filter(function (p) { return p < y - 2; }).pop();
+      var inner = null;
+      if (dir > 0 && next !== undefined && next - y > vh + 2) inner = Math.min(next - vh, y + vh * 0.85);
+      if (dir < 0 && prev !== undefined && y - prev > vh + 2) inner = Math.max(prev, y - vh * 0.85);
+      if (inner !== null) {
+        locked = true;
+        window.scrollTo({ top: inner });
+        setTimeout(function release() {
+          if (Date.now() - lastWheel < 200) setTimeout(release, 100);
+          else { locked = false; acc = 0; }
+        }, 650);
+        return;
+      }
       list.forEach(function (p, j) { if (Math.abs(p - y) < Math.abs(list[i] - y)) i = j; });
       // Якщо стоїмо між точками (секція вища за екран), спершу доходимо до найближчої в бік руху.
       if (dir > 0 && list[i] <= y + 2) i++;
@@ -984,6 +1094,43 @@
           if (e.intersectionRatio >= 0.2) { step(); timer = setInterval(step, 1900); }
         });
       }, { threshold: 0.2 }).observe(frame);
+    })();
+
+    // Архіви: ZIP — idle → розпакування (смуга з відсотками) → книга;
+    // книга без файлів — «Слухаю» → сіра в «Закинутих» з тим самим прогресом → повернулась.
+    (function () {
+      var zip = document.querySelector('.acard.zip'), keep = document.querySelector('.acard.keep');
+      if (!zip || !keep) return;
+      var bar = zip.querySelector('.abar i'), meta = zip.querySelector('.zmeta');
+      var chipHere = keep.querySelector('.c-here'), chipGone = keep.querySelector('.c-gone');
+      var timers = [], raf = 0;
+      function later(ms, fn) { timers.push(setTimeout(fn, ms)); }
+      function stop() { timers.forEach(clearTimeout); timers = []; cancelAnimationFrame(raf); }
+      function unzip() {
+        var t0 = performance.now(), dur = 1400;
+        (function frame(now) {
+          var p = Math.min(1, (now - t0) / dur);
+          bar.style.width = (p * 100) + '%';
+          meta.textContent = (document.documentElement.lang === 'uk' ? 'Розпаковується… ' : 'Unpacking… ') + Math.round(p * 100) + '%';
+          if (p < 1) raf = requestAnimationFrame(frame);
+        })(t0);
+      }
+      function cycle() {
+        zip.dataset.s = 'idle'; bar.style.width = '0'; meta.textContent = '98 ' + (document.documentElement.lang === 'uk' ? 'МБ' : 'MB');
+        keep.dataset.s = 'here'; chipHere.classList.add('on'); chipGone.classList.remove('on');
+        later(900, function () { zip.dataset.s = 'unzip'; unzip(); });
+        later(2500, function () { zip.dataset.s = 'done'; });
+        later(2200, function () { keep.dataset.s = 'gone'; chipHere.classList.remove('on'); chipGone.classList.add('on'); });
+        later(4600, function () { keep.dataset.s = 'here'; chipGone.classList.remove('on'); chipHere.classList.add('on'); });
+        later(6200, cycle);
+      }
+      if (!animated) { zip.dataset.s = 'done'; keep.dataset.s = 'gone'; chipHere.classList.remove('on'); chipGone.classList.add('on'); return; }
+      new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          stop();
+          if (e.intersectionRatio >= 0.2) cycle();
+        });
+      }, { threshold: 0.2 }).observe(zip.parentNode);
     })();
 
     // Трейлер: при наведенні грає без звуку й зупиняється, коли курсор іде.
